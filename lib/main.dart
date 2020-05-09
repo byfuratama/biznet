@@ -19,7 +19,7 @@ import './screens/survey_edit_screen.dart';
 import 'package:intl/intl.dart';
 
 import './providers/auth.dart';
-// import './providers/products.dart';
+import './providers/survey.dart';
 // import './providers/cart.dart';
 // import './providers/orders.dart';
 
@@ -34,9 +34,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Auth(),
         ),
-        // ChangeNotifierProvider.value(
-        //   value: Products(),
-        // ),
+        ChangeNotifierProvider.value(
+          value: Survey(),
+        ),
         // ChangeNotifierProvider.value(
         //   value: Cart(),
         // ),

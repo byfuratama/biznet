@@ -50,19 +50,22 @@ class TextBox extends StatelessWidget {
 
 class FormTextBox extends StatelessWidget {
   final TextEditingController controller;
+  final String initialVal;
   final Function onSave;
   final Function validator;
   final String label;
 
-  FormTextBox(this.label, this.onSave, {this.controller,  this.validator});
+  FormTextBox(this.label, this.initialVal, this.onSave, {this.controller,  this.validator});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    print(initialVal);
     return TextFormField(
-      controller: controller,
+      initialValue: initialVal,
+      // controller: controller,
       onSaved: onSave,
-      validator: validator,
+      // validator: validator,
       decoration: InputDecoration(
         border: OutlineInputBorder(
             borderSide: BorderSide(color: theme.primaryColor)),

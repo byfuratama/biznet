@@ -17,7 +17,7 @@ class NumberedTile extends StatelessWidget {
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: contents.map((content) => Text(content)).toList(),
+          children: contents.map((content) => Text(content ?? '')).toList(),
         ),
         trailing: trailing,
       ),

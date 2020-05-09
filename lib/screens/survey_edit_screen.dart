@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../widgets/utilities.dart';
+import '../providers/survey.dart';
 
 class SurveyEditScreen extends StatefulWidget {
   static const routeName = '/survey-edit-screen';
@@ -12,7 +15,7 @@ class SurveyEditScreen extends StatefulWidget {
 }
 
 class _SurveyEditScreenState extends State<SurveyEditScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _form = GlobalKey<FormState>();
   Map<String, String> _formData = {
     'cust_nama': '',
     'cust_nohp': '',
@@ -52,6 +55,7 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
 
   List<DropdownMenuItem<String>> _paketList;
   List<DropdownMenuItem<String>> _statusList;
+  SurveyItem _editedItem;
 
   @override
   void initState() {
@@ -63,6 +67,66 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    final String id = widget.dataId;
+    if (id != null && id != '') {
+      _editedItem = Provider.of<Survey>(context, listen: false).findById(id);
+      setState(() {
+        _formData['cust_nama'] = _editedItem.customer;
+        _formData['surv_status'] = _editedItem.status;
+      });
+    }
+    super.didChangeDependencies();
+  }
+
+  bool _isLoading = false;
+
+  Future<void> _saveForm() async {
+    final isValid = _form.currentState.validate();
+    final id = widget.dataId;
+    if (!isValid) {
+      return;
+    }
+    _form.currentState.save();
+    setState(() {
+      _isLoading = true;
+    });
+    _editedItem = SurveyItem(
+      customer: _formData['cust_nama'],
+      equipment: _formData['cust_nama'],
+      status: _formData['surv_status'],
+    );
+    if (id != null && id != '') {
+      await Provider.of<Survey>(context, listen: false)
+          .updateItem(id, _editedItem);
+    } else {
+      try {
+        await Provider.of<Survey>(context, listen: false).addItem(_editedItem);
+      } catch (error) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('An error occurred!'),
+            content: Text('Something went wrong.'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              )
+            ],
+          ),
+        );
+      } 
+    }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
+  }
+
+  @override
   Widget build(BuildContext context) {
     String title = widget.dataId != '' ? "Edit Survey" : "New Survey";
     return Scaffold(
@@ -70,49 +134,67 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
         title: Text(title),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.save),
-              onPressed: () {
-                _formKey.currentState.save();
-                print(_formData);
-              })
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
+          )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                FormTextBox(
-                    "Nama Customer", (val) => _formData['cust_nama'] = val),
-                SizedBox(height: 5),
-                FormTextBox("No HP", (val) => _formData['cust_nohp'] = val),
-                SizedBox(height: 5),
-                FormTextBox("Alamat", (val) => _formData['cust_alamat'] = val),
-                SizedBox(height: 5),
-                FormTextBox("Email", (val) => _formData['cust_email'] = val),
-                SizedBox(height: 5),
-                ComboBox(_formData['cust_paket'], _paketList,
-                    (val) => changeItem(val, 'cust_paket')),
-                SizedBox(height: 25),
-                FormTextBox("Kabel", (val) => _formData['eq_cable'] = val),
-                SizedBox(height: 5),
-                FormTextBox("Closure", (val) => _formData['eq_closure'] = val),
-                SizedBox(height: 5),
-                FormTextBox("Pigtail", (val) => _formData['eq_pigtail'] = val),
-                SizedBox(height: 5),
-                FormTextBox("Splicer", (val) => _formData['eq_splicer'] = val),
-                SizedBox(height: 5),
-                FormTextBox("Ont", (val) => _formData['eq_ont'] = val),
-                SizedBox(height: 25),
-                ComboBox(_formData['surv_status'], _statusList,
-                    (val) => changeItem(val, 'surv_status')),
-                SizedBox(height: 5),
-              ],
+      body: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Form(
+                key: _form,
+                child: Column(
+                  children: <Widget>[
+                    FormTextBox(
+                        "Nama Customer", _formData['cust_nama'], (val) => _formData['cust_nama'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox("No HP", _formData['cust_nohp'], (val) => _formData['cust_nohp'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                        "Alamat", _formData['cust_alamat'], (val) => _formData['cust_alamat'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                        "Email", _formData['cust_email'], (val) => _formData['cust_email'] = val),
+                    SizedBox(height: 5),
+                    ComboBox(_formData['cust_paket'], _paketList,
+                        (val) => changeItem(val, 'cust_paket')),
+                    SizedBox(height: 25),
+                    FormTextBox("Kabel", _formData['eq_cable'], (val) => _formData['eq_cable'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                        "Closure", _formData['eq_closure'], (val) => _formData['eq_closure'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                        "Pigtail", _formData['eq_pigtail'], (val) => _formData['eq_pigtail'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                        "Splicer", _formData['eq_splicer'], (val) => _formData['eq_splicer'] = val),
+                    SizedBox(height: 5),
+                    FormTextBox("Ont", _formData['eq_ont'], (val) => _formData['eq_ont'] = val),
+                    SizedBox(height: 25),
+                    ComboBox(_formData['surv_status'], _statusList,
+                        (val) => changeItem(val, 'surv_status')),
+                    SizedBox(height: 5),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+          if (_isLoading) Stack(
+            children: [
+              new Opacity(
+                opacity: 0.3,
+                child: ModalBarrier(dismissible: false, color: Colors.grey),
+              ),
+              new Center(
+                child: new CircularProgressIndicator(),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -9,20 +9,19 @@ class SurveyItem {
   final status;
   final equipment;
   final customer;
+  final createdAt;
 
   SurveyItem({
-    @required this.id,
+    this.id,
     @required this.status,
     @required this.equipment,
     @required this.customer,
+    this.createdAt
   });
 }
 
 class Survey with ChangeNotifier {
   List<SurveyItem> _items = [];
-  final String authToken;
-  final String userId;
-  Survey(this.authToken, this.userId, this._items);
 
   static const String _baseUrl = "https://biznet-3624b.firebaseio.com/surveys";
 
@@ -46,10 +45,10 @@ class Survey with ChangeNotifier {
           status: data['status'],
           equipment: data['equipment'],
           customer: data['customer'],
+          createdAt: data['createdAt'],
         ));
       });
       _items = loadedProducts;
-      print(_items);
       notifyListeners();
     } catch (error) {
       throw error;
@@ -59,12 +58,14 @@ class Survey with ChangeNotifier {
   Future<void> addItem(SurveyItem item) async {
     final url = '$_baseUrl.json';
     try {
+      final createdAt = DateTime.now().toString();
       final response = await http.post(
         url,
         body: json.encode({
           'status': item.status,
           'equipment': item.equipment,
           'customer': item.customer,
+          'createdAt': createdAt,
         }),
       );
 
@@ -73,6 +74,7 @@ class Survey with ChangeNotifier {
         status: item.status,
         equipment: item.equipment,
         customer: item.customer,
+        createdAt: createdAt,
       );
       _items.add(newItem);
       notifyListeners();
@@ -92,6 +94,7 @@ class Survey with ChangeNotifier {
           'status': item.status,
           'equipment': item.equipment,
           'customer': item.customer,
+          'createdAt': item.createdAt,
         }),
       );
       _items[itemIndex] = item;
@@ -101,19 +104,19 @@ class Survey with ChangeNotifier {
     }
   }
 
-  Future<void> deleteProduct(String id) async {
+  Future<void> deleteItem(String id) async {
     final url = '$_baseUrl/$id.json';
     final existingItemIndex = _items.indexWhere((prod) => prod.id == id);
-    var existingProduct = _items[existingItemIndex];
+    var existingItem = _items[existingItemIndex];
     _items.removeAt(existingItemIndex);
     notifyListeners();
     final response = await http.delete(url);
     if (response.statusCode >= 400) {
-      _items.insert(existingItemIndex, existingProduct);
+      _items.insert(existingItemIndex, existingItem);
       notifyListeners();
-      throw HttpException('Could not delete product');
+      throw HttpException('Could not delete this item');
     }
-    existingProduct = null;
+    existingItem = null;
   }
 
 }
