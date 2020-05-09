@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+
 import '../widgets/app_header.dart';
-import '../screens/survey_screen.dart';
-import '../screens/maintenance_screen.dart';
-import '../screens/installation_screen.dart';
-import '../screens/troubleshoot_screen.dart';
+import '../widgets/utilities.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -12,17 +10,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  void selectMenu(BuildContext context, String route) {
-    Navigator.of(context)
-        .pushNamed(
-      route,
-    )
-        .then((result) {
-      if (result != null) {
-        // removeItem(result);
-      }
-    });
-  }
+  TextEditingController _searchController;
+  String _searchQuery;
 
   List _searchCategories = [
     'Work Order ID',
@@ -37,7 +26,14 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     _searchCategoryItems = getDropDownMenuItems();
     _currentCategory = _searchCategoryItems[0].value;
+    _searchController = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
@@ -57,34 +53,21 @@ class _SearchScreenState extends State<SearchScreen> {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: <Widget>[
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 15.0),
-          decoration: BoxDecoration(
-              border: Border.all(color: theme.primaryColor),
-              color: Colors.white),
-          child: DropdownButton(
-            isExpanded: true,
-            value: _currentCategory,
-            items: _searchCategoryItems,
-            onChanged: changeCategory,
-          ),
-        ),
+        ComboBox(_currentCategory, _searchCategoryItems, changeCategory),
         SizedBox(height: 10),
-        TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-                borderSide: BorderSide(color: theme.primaryColor)),
-            fillColor: Colors.white,
-            filled: true,
-            labelText:
-                'Enter ${_searchCategories[int.parse(_currentCategory)]}',
-          ),
+        TextBox(
+          'Enter ${_searchCategories[int.parse(_currentCategory)]}',
+          _searchController,
+          (String val) => _searchQuery = val,
         ),
         SizedBox(height: 10),
         RaisedButton(
-          onPressed: () {},
+          onPressed: () => print(_searchQuery),
           color: Colors.blueAccent,
-          child: Text('SEARCH', style: TextStyle(color: Colors.white),),
+          child: Text(
+            'SEARCH',
+            style: TextStyle(color: Colors.white),
+          ),
         )
       ],
     );
@@ -93,6 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void changeCategory(String selectedCategory) {
     setState(() {
       _currentCategory = selectedCategory;
+      _searchController.text = '';
     });
   }
 

@@ -14,6 +14,8 @@ import './screens/maintenance_report_screen.dart';
 import './screens/installation_report_screen.dart';
 import './screens/troubleshoot_report_screen.dart';
 
+import './screens/survey_edit_screen.dart';
+
 import 'package:intl/intl.dart';
 
 import './providers/auth.dart';
@@ -63,6 +65,13 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
           ),
+          onGenerateRoute: (settings) {
+            var routes = <String, WidgetBuilder>{
+              SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(settings.arguments),
+            };
+            WidgetBuilder builder = routes[settings.name];
+            return MaterialPageRoute(builder: (ctx) => builder(ctx));
+          },
           home: !auth.isAuth ? TabsScreen() : LoginScreen(),
           routes: {
             TabsScreen.routeName: (ctx) => TabsScreen(),
@@ -72,11 +81,16 @@ class MyApp extends StatelessWidget {
             TroubleshootScreen.routeName: (ctx) => TroubleshootScreen(),
             InstallationScreen.routeName: (ctx) => InstallationScreen(),
             MaintenanceScreen.routeName: (ctx) => MaintenanceScreen(),
-            
+
+            // SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(),
+
             SurveyReportScreen.routeName: (ctx) => SurveyReportScreen(),
-            TroubleshootReportScreen.routeName: (ctx) => TroubleshootReportScreen(),
-            InstallationReportScreen.routeName: (ctx) => InstallationReportScreen(),
-            MaintenanceReportScreen.routeName: (ctx) => MaintenanceReportScreen(),
+            TroubleshootReportScreen.routeName: (ctx) =>
+                TroubleshootReportScreen(),
+            InstallationReportScreen.routeName: (ctx) =>
+                InstallationReportScreen(),
+            MaintenanceReportScreen.routeName: (ctx) =>
+                MaintenanceReportScreen(),
             // OrdersScreen.routeName: (ctx) => OrdersScreen(),
             // UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
             // EditProductScreen.routeName: (ctx) => EditProductScreen(),
