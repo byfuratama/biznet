@@ -6,17 +6,17 @@ import '../providers/survey.dart';
 import '../providers/customer.dart';
 import '../providers/equipment.dart';
 
-class SurveyEditScreen extends StatefulWidget {
-  static const routeName = '/survey-edit-screen';
+class PegawaiEditScreen extends StatefulWidget {
+  static const routeName = '/pegawai-edit-screen';
   final dataId;
 
-  SurveyEditScreen(this.dataId);
+  PegawaiEditScreen(this.dataId);
 
   @override
-  _SurveyEditScreenState createState() => _SurveyEditScreenState();
+  _PegawaiEditScreenState createState() => _PegawaiEditScreenState();
 }
 
-class _SurveyEditScreenState extends State<SurveyEditScreen> {
+class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
   final _form = GlobalKey<FormState>();
   Map<String, String> _formData = {
     'cust_nama': '',

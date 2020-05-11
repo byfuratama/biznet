@@ -1,15 +1,20 @@
+import 'package:biznet/providers/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/app_header.dart';
 import '../screens/survey_screen.dart';
 import '../screens/maintenance_screen.dart';
 import '../screens/installation_screen.dart';
 import '../screens/troubleshoot_screen.dart';
+import '../screens/pegawai_screen.dart';
+import '../screens/pegawai_edit_screen.dart';
 
 class MyProfileScreen extends StatelessWidget {
-  void selectMenu(BuildContext context, String route) {
+  void selectMenu(BuildContext context, String route, {Object arguments}) {
     Navigator.of(context)
         .pushNamed(
       route,
+      arguments: arguments
     )
         .then((result) {
       if (result != null) {
@@ -43,14 +48,33 @@ class MyProfileScreen extends StatelessWidget {
 
   Widget createMenu(BuildContext context) {
     final theme = Theme.of(context);
+    final user = Provider.of<Auth>(context).userId;
     return ListView(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: <Widget>[
+        Text(user.toString()),
         Card(
             color: Colors.orangeAccent,
             child: InkWell(
-              onTap: () {},
+              onTap: () => selectMenu(context, PegawaiScreen.routeName),
+              child: ListTile(
+                leading: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Edit Pegawai',
+                  style: theme.textTheme.display1
+                      .copyWith(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        Card(
+            color: Colors.orangeAccent,
+            child: InkWell(
+              onTap: () => selectMenu(context, PegawaiEditScreen.routeName),
               child: ListTile(
                 leading: Icon(
                   Icons.settings,

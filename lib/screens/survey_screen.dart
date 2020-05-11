@@ -6,7 +6,10 @@ import 'package:intl/intl.dart';
 import '../widgets/numbered_tile.dart';
 import '../widgets/mini_detail_modal.dart';
 import './survey_edit_screen.dart';
+
 import '../providers/survey.dart';
+import '../providers/customer.dart';
+import '../providers/equipment.dart';
 
 class SurveyScreen extends StatefulWidget {
   static const routeName = '/survey-screen';
@@ -18,11 +21,17 @@ class SurveyScreen extends StatefulWidget {
 }
 
 class _SurveyScreenState extends State<SurveyScreen> {
+  
+  bool _triggerOnce = false;
   @override
   void didChangeDependencies() {
-    Future.delayed(Duration.zero).then((_) {
-      Provider.of<Survey>(context).fetchAndSet();
-    });
+    if (_triggerOnce) {
+      return;
+    }
+    Provider.of<Survey>(context).fetchAndSet();
+    Provider.of<Customer>(context).fetchAndSet();
+    Provider.of<Equipment>(context).fetchAndSet();
+    _triggerOnce = true;
     super.didChangeDependencies();
   }
 
@@ -33,14 +42,23 @@ class _SurveyScreenState extends State<SurveyScreen> {
     );
   }
 
-  void _showBottomModal(BuildContext context, SurveyItem item) {
+  void _showBottomModal(BuildContext context, SurveyItem item, CustomerItem customer, EquipmentItem equipment) {
+    // final customerItem = 
     showModalBottomSheet(
         context: context,
         builder: (_) {
           return MiniDetailModal(
             [
-              'Customer Name: ${item.customer}',
-              'Equipment : ${item.equipment}',
+              'Customer Name: ${customer.nama}',
+              'Customer HP: ${customer.nohp}',
+              'Customer Alamat: ${customer.alamat}',
+              'Customer Email: ${customer.email}',
+              'Customer Paket: ${customer.paket}',
+              'Equipment Cable: ${equipment.cable}',
+              'Equipment Closure: ${equipment.closure}',
+              'Equipment Pigtail: ${equipment.pigtail}',
+              'Equipment Splicer: ${equipment.splicer}',
+              'Equipment ONT: ${equipment.ont}',
               'Status: ${item.status}',
             ],
             () {
@@ -58,6 +76,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   Future<void> _refreshItems(context) async {
     Provider.of<Survey>(context).fetchAndSet();
+    Provider.of<Customer>(context).fetchAndSet();
+    Provider.of<Equipment>(context).fetchAndSet();
   }
 
   @override
@@ -80,12 +100,14 @@ class _SurveyScreenState extends State<SurveyScreen> {
           child: ListView.builder(
             itemBuilder: (ctx, index) {
               var survey = surveyItems.items[index];
+              var customer = Provider.of<Customer>(context).findById(survey.customer);
+              var equipment = Provider.of<Equipment>(context).findById(survey.equipment);
               return InkWell(
-                onTap: () => _showBottomModal(context, survey),
+                onTap: () => _showBottomModal(context, survey, customer, equipment),
                 child: NumberedTile(
                   index + 1,
                   [
-                    survey.customer,
+                    customer.nama,
                     DateFormat('dd MMMM yyyy', 'ID').format(DateTime.parse(survey.createdAt)),
                   ],
                   Chip(

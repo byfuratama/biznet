@@ -4,32 +4,53 @@ import 'package:biznet/models/http_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-class SurveyItem {
+class PegawaiItem {
   final id;
-  final status;
-  final equipment;
-  final customer;
+  final uid;
+  final nama;
+  final posisi;
+  final noHp;
+  final foto;
   final createdAt;
 
-  SurveyItem(
-      {this.id,
-      @required this.status,
-      @required this.equipment,
-      @required this.customer,
-      this.createdAt});
+  PegawaiItem({
+    this.id,
+    @required this.uid,
+    @required this.nama,
+    @required this.posisi,
+    @required this.noHp,
+    @required this.foto,
+    this.createdAt
+  });
 }
 
-class Survey with ChangeNotifier {
-  List<SurveyItem> _items = [];
+class Pegawai with ChangeNotifier {
+  List<PegawaiItem> _items = [];
 
-  static const String _baseUrl = "https://biznet-3624b.firebaseio.com/surveys";
+  static const String _baseUrl = "https://biznet-3624b.firebaseio.com/pegawais";
 
-  List<SurveyItem> get items {
+  List<PegawaiItem> get items {
     return [..._items];
   }
 
-  SurveyItem findById(String id) {
+  PegawaiItem dummy() {
+    return PegawaiItem(
+      foto: '', uid: 'tzb0UKsdppNJaMEUiDisS8FUMrK2', nama: 'DUMMY', noHp: '08112345678', posisi: 'ADMIN'
+    );
+  }
+
+  PegawaiItem findById(String id) {
+    if (_items.length == 0) return dummy();
     return _items.firstWhere((item) => item.id == id);
+  }
+
+  PegawaiItem findByUid(String uid) {
+    if (_items.length == 0) return dummy();
+    return _items.firstWhere((item) => item.uid == uid);
+  }
+
+  PegawaiItem findLast() {
+    return _items.last;
   }
 
   Future<void> fetchAndSet([bool filterByUser = false]) async {
@@ -37,13 +58,15 @@ class Survey with ChangeNotifier {
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      final List<SurveyItem> loadedProducts = [];
+      final List<PegawaiItem> loadedProducts = [];
       extractedData.forEach((key, data) {
-        loadedProducts.add(SurveyItem(
+        loadedProducts.add(PegawaiItem(
           id: key,
-          status: data['status'],
-          equipment: data['equipment'],
-          customer: data['customer'],
+          uid: data['uid'],
+          nama: data['nama'],
+          posisi: data['posisi'],
+          noHp: data['noHp'],
+          foto: data['foto'],
           createdAt: data['createdAt'],
         ));
       });
@@ -54,25 +77,28 @@ class Survey with ChangeNotifier {
     }
   }
 
-  Future<void> addItem(SurveyItem item) async {
+  Future<void> addItem(PegawaiItem item) async {
     final url = '$_baseUrl.json';
     try {
       final createdAt = DateTime.now().toString();
       final response = await http.post(
         url,
         body: json.encode({
-          'status': item.status,
-          'equipment': item.equipment,
-          'customer': item.customer,
+          'nama': item.nama,
+          'posisi': item.posisi,
+          'noHp': item.noHp,
+          'foto': item.foto,
           'createdAt': createdAt,
         }),
       );
 
-      final newItem = SurveyItem(
+      final newItem = PegawaiItem(
         id: json.decode(response.body)['name'],
-        status: item.status,
-        equipment: item.equipment,
-        customer: item.customer,
+        uid: item.uid,
+        nama: item.nama,
+        posisi: item.posisi,
+        noHp: item.noHp,
+        foto: item.foto,
         createdAt: createdAt,
       );
       _items.add(newItem);
@@ -83,16 +109,18 @@ class Survey with ChangeNotifier {
     }
   }
 
-  Future<void> updateItem(String id, SurveyItem item) async {
+  Future<void> updateItem(String id, PegawaiItem item) async {
     final itemIndex = _items.indexWhere((prod) => prod.id == id);
     if (itemIndex >= 0) {
       final url = '$_baseUrl/$id.json';
       await http.patch(
         url,
         body: json.encode({
-          'status': item.status,
-          'equipment': item.equipment,
-          'customer': item.customer,
+          'nama': item.nama,
+          'posisi': item.posisi,
+          'noHp': item.noHp,
+          'foto': item.foto,
+          'createdAt': item.createdAt,
         }),
       );
       _items[itemIndex] = item;
@@ -116,4 +144,5 @@ class Survey with ChangeNotifier {
     }
     existingItem = null;
   }
+
 }

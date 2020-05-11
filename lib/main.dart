@@ -13,15 +13,20 @@ import './screens/survey_report_screen.dart';
 import './screens/maintenance_report_screen.dart';
 import './screens/installation_report_screen.dart';
 import './screens/troubleshoot_report_screen.dart';
+import './screens/pegawai_edit_screen.dart';
+import './screens/pegawai_screen.dart';
 
 import './screens/survey_edit_screen.dart';
+import './screens/installation_edit_screen.dart';
 
 import 'package:intl/intl.dart';
 
 import './providers/auth.dart';
 import './providers/survey.dart';
-// import './providers/cart.dart';
-// import './providers/orders.dart';
+import './providers/customer.dart';
+import './providers/equipment.dart';
+import './providers/work_order.dart';
+import './providers/pegawai.dart';
 
 void main() => runApp(MyApp());
 
@@ -37,12 +42,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Survey(),
         ),
-        // ChangeNotifierProvider.value(
-        //   value: Cart(),
-        // ),
-        // ChangeNotifierProvider.value(
-        //   value: Orders(),
-        // ),
+        ChangeNotifierProvider.value(
+          value: Customer(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Equipment(),
+        ),
+        ChangeNotifierProvider.value(
+          value: WorkOrder(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Pegawai(),
+        ),
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
@@ -68,11 +79,13 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: (settings) {
             var routes = <String, WidgetBuilder>{
               SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(settings.arguments),
+              PegawaiEditScreen.routeName: (ctx) => PegawaiEditScreen(settings.arguments),
+              InstallationEditScreen.routeName: (ctx) => InstallationEditScreen(settings.arguments),
             };
             WidgetBuilder builder = routes[settings.name];
             return MaterialPageRoute(builder: (ctx) => builder(ctx));
           },
-          home: !auth.isAuth ? TabsScreen() : LoginScreen(),
+          home: auth.isAuth ? TabsScreen() : LoginScreen(),
           routes: {
             TabsScreen.routeName: (ctx) => TabsScreen(),
             LoginScreen.routeName: (ctx) => LoginScreen(),
@@ -81,8 +94,7 @@ class MyApp extends StatelessWidget {
             TroubleshootScreen.routeName: (ctx) => TroubleshootScreen(),
             InstallationScreen.routeName: (ctx) => InstallationScreen(),
             MaintenanceScreen.routeName: (ctx) => MaintenanceScreen(),
-
-            // SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(),
+            PegawaiScreen.routeName: (ctx) => PegawaiScreen(),
 
             SurveyReportScreen.routeName: (ctx) => SurveyReportScreen(),
             TroubleshootReportScreen.routeName: (ctx) =>
