@@ -13,11 +13,13 @@ import './screens/survey_report_screen.dart';
 import './screens/maintenance_report_screen.dart';
 import './screens/installation_report_screen.dart';
 import './screens/troubleshoot_report_screen.dart';
-import './screens/pegawai_edit_screen.dart';
 import './screens/pegawai_screen.dart';
 
 import './screens/survey_edit_screen.dart';
 import './screens/installation_edit_screen.dart';
+import './screens/troubleshoot_edit_screen.dart';
+import './screens/maintenance_edit_screen.dart';
+import './screens/pegawai_edit_screen.dart';
 
 import 'package:intl/intl.dart';
 
@@ -27,6 +29,7 @@ import './providers/customer.dart';
 import './providers/equipment.dart';
 import './providers/work_order.dart';
 import './providers/pegawai.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() => runApp(MyApp());
 
@@ -34,6 +37,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Intl.defaultLocale = 'id-ID';
+    initializeDateFormatting('id-ID', null);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
@@ -81,6 +85,8 @@ class MyApp extends StatelessWidget {
               SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(settings.arguments),
               PegawaiEditScreen.routeName: (ctx) => PegawaiEditScreen(settings.arguments),
               InstallationEditScreen.routeName: (ctx) => InstallationEditScreen(settings.arguments),
+              MaintenanceEditScreen.routeName: (ctx) => MaintenanceEditScreen(settings.arguments),
+              TroubleshootEditScreen.routeName: (ctx) => TroubleshootEditScreen(settings.arguments),
             };
             WidgetBuilder builder = routes[settings.name];
             return MaterialPageRoute(builder: (ctx) => builder(ctx));

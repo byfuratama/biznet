@@ -10,20 +10,20 @@ import '../providers/pegawai.dart';
 import '../providers/auth.dart';
 import '../providers/work_order.dart';
 
-class InstallationEditScreen extends StatefulWidget {
-  static const routeName = '/installation-edit-screen';
+class MaintenanceEditScreen extends StatefulWidget {
+  static const routeName = '/maintenance-edit-screen';
   final dataId;
 
-  InstallationEditScreen(this.dataId);
+  MaintenanceEditScreen(this.dataId);
 
   @override
-  _InstallationEditScreenState createState() => _InstallationEditScreenState();
+  _MaintenanceEditScreenState createState() => _MaintenanceEditScreenState();
 }
 
-class _InstallationEditScreenState extends State<InstallationEditScreen> {
+class _MaintenanceEditScreenState extends State<MaintenanceEditScreen> {
   final _formKey = GlobalKey<FormState>();
   Map<String, String> _formData = {
-    'wo_jenis': 'Installasi',
+    'wo_jenis': 'Maintenance',
     'wo_status': 'Open',
     'wo_level': '',
     'wo_create_date': '',
@@ -42,6 +42,7 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
     'eq_ont': '',
     'teknisi': '',
     'admin': '',
+    'customer': '',
   };
 
   Map<String, TextEditingController> _formControllers;
@@ -127,20 +128,18 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
       Provider.of<Customer>(context).fetchAndSet(),
       Provider.of<Equipment>(context).fetchAndSet(),
     ]);
-    await Provider.of<Survey>(context).fetchAndSet().then((_) {
-      Survey surveys = Provider.of<Survey>(context, listen: false);
-      _items['survey_list'] = surveys.items.toList();
-      _surveyList = getDropDownMenuItems(
-        'survey_list',
-        'Survey :',
-        label: (SurveyItem survey) {
-          CustomerItem cst = Provider.of<Customer>(context, listen: false)
-              .findById(survey.customer);
-          return '${cst.nama}, ${Formatting.dateDMY(survey.createdAt)}';
+    await Provider.of<Customer>(context).fetchAndSet().then((_) {
+      Customer customers = Provider.of<Customer>(context, listen: false);
+      _items['customer_list'] = customers.items.toList();
+      _customerList = getDropDownMenuItems(
+        'customer_list',
+        'Customer :',
+        label: (CustomerItem cust) {
+          return '${cust.nama}';
         },
       );
-      _formData['survey'] = _surveyList[0].value;
-      loadSurveyData();
+      _formData['customer'] = _customerList[0].value;
+      loadCustomerData();
     });
     // Pegawai pegawais = Provider.of<Pegawai>(context, listen: false);
     // _items['pegawai_list'] = pegawais.items.map((item) => '${item.id}').toList();
@@ -176,31 +175,26 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
             Formatting.dateDMYHM(woItem.createdAt);
         _formControllers['wo_close_date'].text =
             Formatting.dateDMYHM(woItem.closeDate);
+        _formControllers['eq_cable'].text = _woEquipment.cable;
+        _formControllers['eq_closure'].text = _woEquipment.closure;
+        _formControllers['eq_pigtail'].text = _woEquipment.pigtail;
+        _formControllers['eq_splicer'].text = _woEquipment.splicer;
+        _formControllers['eq_ont'].text = _woEquipment.ont;
       }
     });
     _triggerOnce = true;
     super.didChangeDependencies();
   }
 
-  void loadSurveyData() {
-    final survey = Provider.of<Survey>(context, listen: false)
-        .findById(_formData['survey']);
-    _woCustomer =
-        Provider.of<Customer>(context, listen: false).findById(survey.customer);
-    _woEquipment = Provider.of<Equipment>(context, listen: false)
-        .findById(survey.equipment);
+  void loadCustomerData() {
+    _woCustomer = Provider.of<Customer>(context, listen: false)
+        .findById(_formData['customer']);
     setState(() {
       _formControllers['cust_nama'].text = _woCustomer.nama;
       _formControllers['cust_nohp'].text = _woCustomer.nohp;
       _formControllers['cust_alamat'].text = _woCustomer.alamat;
       _formControllers['cust_email'].text = _woCustomer.email;
       _formControllers['cust_paket'].text = _woCustomer.paket;
-      _formControllers['eq_cable'].text = _woEquipment.cable;
-      _formControllers['eq_closure'].text = _woEquipment.closure;
-      _formControllers['eq_pigtail'].text = _woEquipment.pigtail;
-      _formControllers['eq_splicer'].text = _woEquipment.splicer;
-      _formControllers['eq_ont'].text = _woEquipment.ont;
-      // print(_formData);
     });
   }
 
@@ -217,6 +211,15 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
     });
     final adminUid = Provider.of<Auth>(context).userId;
     final admin = Provider.of<Pegawai>(context).findByUid(adminUid);
+    EquipmentItem woEq = EquipmentItem(
+      cable: _formData['eq_cable'],
+      closure: _formData['eq_closure'],
+      pigtail: _formData['eq_pigtail'],
+      splicer: _formData['eq_splicer'],
+      ont: _formData['eq_ont'],
+    );
+    await Provider.of<Equipment>(context).addItem(woEq);
+    final equipment = Provider.of<Equipment>(context).findLast();
     if (id != null && id != '') {
       try {
         WorkOrderItem woItem = WorkOrderItem(
@@ -224,15 +227,15 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
           status: _formData['wo_status'],
           createDate: _formData['wo_create_date'],
           closeDate: _formData['wo_close_date'],
-          customer: _woCustomer.id,
-          equipment: _woEquipment.id,
-          survey: _formData['survey'],
           kodeDp: _formData['wo_kode_dp'],
           level: _formData['wo_level'],
+          customer: _woCustomer.id,
+          equipment: equipment.id,
           admin: admin.id
         );
         await Provider.of<WorkOrder>(context, listen: false)
             .updateItem(id, woItem);
+        await Provider.of<Equipment>(context, listen: false).deleteItem(_woEquipment.id);
       } catch (error) {}
     } else {
       try {
@@ -241,11 +244,10 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
           status: _formData['wo_status'],
           createDate: _formData['wo_create_date'],
           closeDate: _formData['wo_close_date'],
-          customer: _woCustomer.id,
-          equipment: _woEquipment.id,
-          survey: _formData['survey'],
           kodeDp: _formData['wo_kode_dp'],
           level: _formData['wo_level'],
+          customer: _woCustomer.id,
+          equipment: equipment.id,
           admin: admin.id
         );
         await Provider.of<WorkOrder>(context, listen: false).addItem(woItem);
@@ -276,7 +278,7 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
   @override
   Widget build(BuildContext context) {
     String title =
-        widget.dataId != '' ? "Edit Installation" : "New Installation";
+        widget.dataId != '' ? "Edit Maintenance" : "New Maintenance";
     // print('RENDER RENDER');
     return Scaffold(
       appBar: AppBar(
@@ -321,12 +323,12 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
                         _formData['wo_close_date'],
                         _formControllers['wo_close_date'],
                         (val) => changeItem(val, 'wo_close_date')),
-                    SizedBox(height: 5),
-                    ComboBox(_formData['survey'], _surveyList, (val) {
-                      changeItem(val, 'survey');
-                      loadSurveyData();
-                    }),
                     SizedBox(height: 25),
+                    ComboBox(_formData['customer'], _customerList, (val) {
+                      changeItem(val, 'customer');
+                      loadCustomerData();
+                    }),
+                    SizedBox(height: 5),
                     FormTextBox("Nama Customer", _formData['cust_nama'],
                         (val) => _formData['cust_nama'] = val,
                         controller: _formControllers['cust_nama'],
@@ -346,31 +348,30 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
                         (val) => _formData['cust_email'] = val,
                         controller: _formControllers['cust_email'],
                         readOnly: true),
-                    SizedBox(height: 5),
                     SizedBox(height: 25),
                     FormTextBox("Kabel", _formData['eq_cable'],
                         (val) => _formData['eq_cable'] = val,
                         controller: _formControllers['eq_cable'],
-                        readOnly: true),
+                        readOnly: false),
                     SizedBox(height: 5),
                     FormTextBox("Closure", _formData['eq_closure'],
                         (val) => _formData['eq_closure'] = val,
                         controller: _formControllers['eq_closure'],
-                        readOnly: true),
+                        readOnly: false),
                     SizedBox(height: 5),
                     FormTextBox("Pigtail", _formData['eq_pigtail'],
                         (val) => _formData['eq_pigtail'] = val,
                         controller: _formControllers['eq_pigtail'],
-                        readOnly: true),
+                        readOnly: false),
                     SizedBox(height: 5),
                     FormTextBox("Splicer", _formData['eq_splicer'],
                         (val) => _formData['eq_splicer'] = val,
                         controller: _formControllers['eq_splicer'],
-                        readOnly: true),
+                        readOnly: false),
                     SizedBox(height: 5),
                     FormTextBox("Ont", _formData['eq_ont'],
                         (val) => _formData['eq_ont'] = val,
-                        controller: _formControllers['eq_ont'], readOnly: true),
+                        controller: _formControllers['eq_ont'], readOnly: false),
                   ],
                 ),
               ),

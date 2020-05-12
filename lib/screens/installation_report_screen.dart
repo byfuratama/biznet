@@ -11,8 +11,7 @@ class InstallationReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return MaterialApp(
-      home: DefaultTabController(
+    return DefaultTabController(
         length: 2,
         child: Scaffold(
           appBar: AppBar(
@@ -85,8 +84,7 @@ class InstallationReportScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
+

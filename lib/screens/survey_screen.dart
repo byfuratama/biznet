@@ -82,7 +82,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('id-ID', null);
     final surveyItems = Provider.of<Survey>(context);
     return Scaffold(
       appBar: AppBar(

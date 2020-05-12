@@ -32,12 +32,12 @@ class MiniDetailModal extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              IconButton(
+              if (this.onEdit != null) IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: onEdit,
                 color: Colors.amber,
               ),
-              IconButton(
+              if (this.onDelete != null) IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: onDelete,
                   color: Colors.red),

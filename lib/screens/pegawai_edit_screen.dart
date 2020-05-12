@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/utilities.dart';
-import '../providers/survey.dart';
-import '../providers/customer.dart';
-import '../providers/equipment.dart';
+import '../providers/pegawai.dart';
+import '../providers/auth.dart';
 
 class PegawaiEditScreen extends StatefulWidget {
   static const routeName = '/pegawai-edit-screen';
-  final dataId;
+  final dataArgs;
 
-  PegawaiEditScreen(this.dataId);
+  PegawaiEditScreen(this.dataArgs);
 
   @override
   _PegawaiEditScreenState createState() => _PegawaiEditScreenState();
@@ -19,22 +18,17 @@ class PegawaiEditScreen extends StatefulWidget {
 class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
   final _form = GlobalKey<FormState>();
   Map<String, String> _formData = {
-    'cust_nama': '',
-    'cust_nohp': '',
-    'cust_alamat': '',
-    'cust_email': '',
-    'cust_paket': '',
-    'eq_cable': '',
-    'eq_closure': '',
-    'eq_pigtail': '',
-    'eq_splicer': '',
-    'eq_ont': '',
-    'surv_status': '',
+    'email': '',
+    'password': '',
+    'pegawai_uid': '',
+    'pegawai_nama': '',
+    'pegawai_posisi': '',
+    'pegawai_no_hp': '',
+    'pegawai_foto': '',
   };
 
   Map<String, List> _items = {
-    'paket_list': ['Home', 'Metronet', 'Dedicated', 'Hospitality'],
-    'status_list': ['Open Net', 'Off Net'],
+    'posisi_list': ['Admin', 'Teknisi', 'Supervisor'],
   };
 
   void changeItem(String selectedItems, String fd) {
@@ -55,46 +49,36 @@ class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
     return items;
   }
 
-  List<DropdownMenuItem<String>> _paketList;
-  List<DropdownMenuItem<String>> _statusList;
-  SurveyItem _editedItem;
-
+  List<DropdownMenuItem<String>> _posisiList;
   @override
   void initState() {
-    _paketList = getDropDownMenuItems('paket_list', 'Paket');
-    _formData['cust_paket'] = _paketList[0].value;
-    _statusList = getDropDownMenuItems('status_list', 'Status');
-    _formData['surv_status'] = _statusList[0].value;
+    _posisiList = getDropDownMenuItems('posisi_list', 'Posisi');
+    _formData['pegawai_posisi'] = _posisiList[0].value;
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    final String id = widget.dataId;
-    if (id != null && id != '') {
-      SurveyItem svItem = Provider.of<Survey>(context, listen: false).findById(id);
-      CustomerItem custItem = Provider.of<Customer>(context, listen: false).findById(svItem.customer);
-      EquipmentItem eqItem = Provider.of<Equipment>(context, listen: false).findById(svItem.equipment);
-      _formData['cust_nama'] = custItem.nama;
-      _formData['cust_nohp'] = custItem.nohp;
-      _formData['cust_alamat'] = custItem.alamat;
-      _formData['cust_email'] = custItem.email;
-      _formData['cust_paket'] = custItem.paket;
-      _formData['eq_cable'] = eqItem.cable;
-      _formData['eq_closure'] = eqItem.closure;
-      _formData['eq_pigtail'] = eqItem.pigtail;
-      _formData['eq_splicer'] = eqItem.splicer;
-      _formData['eq_ont'] = eqItem.ont;
-      _formData['surv_status'] = svItem.status;
+    final String id = widget.dataArgs['id'];
+    final String uid = widget.dataArgs['uid'];
+    print('ouch ${widget.dataArgs}');
+    if ((id != null && id != '') || (uid != null && uid != '')) {
+      PegawaiItem pgwItem = id != null && id != ''
+          ? Provider.of<Pegawai>(context, listen: false).findById(id)
+          : Provider.of<Pegawai>(context, listen: false).findByUid(uid);
+      _formData['pegawai_nama'] = pgwItem.nama;
+      _formData['pegawai_posisi'] = pgwItem.posisi;
+      _formData['pegawai_no_hp'] = pgwItem.noHp;
+      _formData['pegawai_foto'] = pgwItem.foto;
     }
     super.didChangeDependencies();
   }
 
   bool _isLoading = false;
-
   Future<void> _saveForm() async {
     final isValid = _form.currentState.validate();
-    final id = widget.dataId;
+    final String id = widget.dataArgs['id'];
+    final String uid = widget.dataArgs['uid'];
     if (!isValid) {
       return;
     }
@@ -102,47 +86,32 @@ class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
     setState(() {
       _isLoading = true;
     });
-    CustomerItem custItem = CustomerItem(
-      nama: _formData['cust_nama'],
-      nohp: _formData['cust_nohp'],
-      alamat: _formData['cust_alamat'],
-      email: _formData['cust_email'],
-      paket: _formData['cust_paket'],
-    );
-    EquipmentItem eqItem = EquipmentItem(
-      cable: _formData['eq_cable'],
-      closure: _formData['eq_closure'],
-      pigtail: _formData['eq_pigtail'],
-      splicer: _formData['eq_splicer'],
-      ont: _formData['eq_ont'],
-    );
-    if (id != null && id != '') {
+    if ((id != null && id != '') || (uid != null && uid != '')) {
       try {
-        await Provider.of<Customer>(context, listen: false).addItem(custItem);
-        await Provider.of<Equipment>(context, listen: false).addItem(eqItem);
-        var cust = Provider.of<Customer>(context, listen: false).findLast();
-        var eq = Provider.of<Equipment>(context, listen: false).findLast();
-        SurveyItem svItem = SurveyItem(
-          customer: cust.id,
-          equipment: eq.id,
-          status: _formData['surv_status'],
+        PegawaiItem pgwItem = PegawaiItem(
+          nama: _formData['pegawai_nama'],
+          posisi: _formData['pegawai_posisi'],
+          noHp: _formData['pegawai_no_hp'],
+          foto: _formData['pegawai_foto'],
         );
-        await Provider.of<Survey>(context, listen: false).updateItem(id, svItem);
-      } catch (error) {
-
-      }
+        await Provider.of<Pegawai>(context, listen: false)
+            .updateItem(pgwItem, id: uid, uid: uid);
+      } catch (error) {}
     } else {
       try {
-        await Provider.of<Customer>(context, listen: false).addItem(custItem);
-        await Provider.of<Equipment>(context, listen: false).addItem(eqItem);
-        var cust = Provider.of<Customer>(context, listen: false).findLast();
-        var eq = Provider.of<Equipment>(context, listen: false).findLast();
-        SurveyItem svItem = SurveyItem(
-          customer: cust.id,
-          equipment: eq.id,
-          status: _formData['surv_status'],
+        final uid =
+            await Provider.of<Auth>(context, listen: false).registerUser(
+          _formData['email'],
+          _formData['password'],
         );
-        await Provider.of<Survey>(context, listen: false).addItem(svItem);
+        PegawaiItem pgwItem = PegawaiItem(
+          uid: uid,
+          nama: _formData['pegawai_nama'],
+          posisi: _formData['pegawai_posisi'],
+          noHp: _formData['pegawai_no_hp'],
+          foto: _formData['pegawai_foto'],
+        );
+        await Provider.of<Pegawai>(context, listen: false).addItem(pgwItem);
       } catch (error) {
         await showDialog(
           context: context,
@@ -169,7 +138,8 @@ class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String title = widget.dataId != '' ? "Edit Survey" : "New Survey";
+    bool editMode = widget.dataArgs['uid'] != '';
+    String title = editMode ? "Edit Pegawai" : "New Pegawai";
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -189,38 +159,32 @@ class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
                 key: _form,
                 child: Column(
                   children: <Widget>[
-                    FormTextBox("Nama Customer", _formData['cust_nama'],
-                        (val) => _formData['cust_nama'] = val),
+                    if (!editMode)
+                      Column(
+                        children: <Widget>[
+                          FormTextBox("Email", _formData['email'],
+                              (val) => _formData['email'] = val),
+                          SizedBox(height: 5),
+                          FormTextBox(
+                            "Password",
+                            _formData['password'],
+                            (val) => _formData['password'] = val,
+                            obscureText: true,
+                          ),
+                          SizedBox(height: 25),
+                        ],
+                      ),
+                    FormTextBox("Nama Pegawai", _formData['pegawai_nama'],
+                        (val) => _formData['pegawai_nama'] = val),
+                    if (!editMode) SizedBox(height: 5),
+                    if (!editMode) ComboBox(_formData['pegawai_posisi'], _posisiList,
+                        (val) => changeItem(val, 'pegawai_posisi')),
                     SizedBox(height: 5),
-                    FormTextBox("No HP", _formData['cust_nohp'],
-                        (val) => _formData['cust_nohp'] = val),
+                    FormTextBox("No HP", _formData['pegawai_no_hp'],
+                        (val) => _formData['pegawai_no_hp'] = val),
                     SizedBox(height: 5),
-                    FormTextBox("Alamat", _formData['cust_alamat'],
-                        (val) => _formData['cust_alamat'] = val),
-                    SizedBox(height: 5),
-                    FormTextBox("Email", _formData['cust_email'],
-                        (val) => _formData['cust_email'] = val),
-                    SizedBox(height: 5),
-                    ComboBox(_formData['cust_paket'], _paketList,
-                        (val) => changeItem(val, 'cust_paket')),
-                    SizedBox(height: 25),
-                    FormTextBox("Kabel", _formData['eq_cable'],
-                        (val) => _formData['eq_cable'] = val),
-                    SizedBox(height: 5),
-                    FormTextBox("Closure", _formData['eq_closure'],
-                        (val) => _formData['eq_closure'] = val),
-                    SizedBox(height: 5),
-                    FormTextBox("Pigtail", _formData['eq_pigtail'],
-                        (val) => _formData['eq_pigtail'] = val),
-                    SizedBox(height: 5),
-                    FormTextBox("Splicer", _formData['eq_splicer'],
-                        (val) => _formData['eq_splicer'] = val),
-                    SizedBox(height: 5),
-                    FormTextBox("Ont", _formData['eq_ont'],
-                        (val) => _formData['eq_ont'] = val),
-                    SizedBox(height: 25),
-                    ComboBox(_formData['surv_status'], _statusList,
-                        (val) => changeItem(val, 'surv_status')),
+                    FormTextBox("Foto", _formData['pegawai_foto'],
+                        (val) => _formData['pegawai_foto'] = val),
                     SizedBox(height: 5),
                   ],
                 ),

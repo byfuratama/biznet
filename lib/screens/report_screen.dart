@@ -75,7 +75,6 @@ class ReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    initializeDateFormatting('id-ID', null);
     return Container(
       color: theme.backgroundColor,
       width: double.infinity,

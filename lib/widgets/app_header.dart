@@ -12,7 +12,6 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('id-ID', null);
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,

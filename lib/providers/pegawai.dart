@@ -15,7 +15,7 @@ class PegawaiItem {
 
   PegawaiItem({
     this.id,
-    @required this.uid,
+    this.uid,
     @required this.nama,
     @required this.posisi,
     @required this.noHp,
@@ -35,13 +35,14 @@ class Pegawai with ChangeNotifier {
 
   PegawaiItem dummy() {
     return PegawaiItem(
-      foto: '', uid: 'tzb0UKsdppNJaMEUiDisS8FUMrK2', nama: 'DUMMY', noHp: '08112345678', posisi: 'ADMIN'
+      foto: '', uid: 'tzb0UKsdppNJaMEUiDisS8FUMrK2', nama: 'belum ada', noHp: '08112345678', posisi: 'ADMIN'
     );
   }
 
   PegawaiItem findById(String id) {
-    if (_items.length == 0) return dummy();
-    return _items.firstWhere((item) => item.id == id);
+    if (id == null) return dummy();
+    final item = _items.firstWhere((item) => item.id == id);
+    return item == null ? dummy() : item;
   }
 
   PegawaiItem findByUid(String uid) {
@@ -84,6 +85,7 @@ class Pegawai with ChangeNotifier {
       final response = await http.post(
         url,
         body: json.encode({
+          'uid': item.uid,
           'nama': item.nama,
           'posisi': item.posisi,
           'noHp': item.noHp,
@@ -109,18 +111,17 @@ class Pegawai with ChangeNotifier {
     }
   }
 
-  Future<void> updateItem(String id, PegawaiItem item) async {
-    final itemIndex = _items.indexWhere((prod) => prod.id == id);
+  Future<void> updateItem(PegawaiItem item, {String id, String uid}) async {
+    final itemIndex = _items.indexWhere((item) => item.id == id || item.uid == uid);
+    id = _items[itemIndex].id;
     if (itemIndex >= 0) {
       final url = '$_baseUrl/$id.json';
       await http.patch(
         url,
         body: json.encode({
           'nama': item.nama,
-          'posisi': item.posisi,
           'noHp': item.noHp,
           'foto': item.foto,
-          'createdAt': item.createdAt,
         }),
       );
       _items[itemIndex] = item;
@@ -132,7 +133,7 @@ class Pegawai with ChangeNotifier {
 
   Future<void> deleteItem(String id) async {
     final url = '$_baseUrl/$id.json';
-    final existingItemIndex = _items.indexWhere((prod) => prod.id == id);
+    final existingItemIndex = _items.indexWhere((item) => item.id == id);
     var existingItem = _items[existingItemIndex];
     _items.removeAt(existingItemIndex);
     notifyListeners();

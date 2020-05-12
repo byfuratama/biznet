@@ -57,9 +57,10 @@ class FormTextBox extends StatelessWidget {
   final Function validator;
   final String label;
   final bool readOnly;
+  final bool obscureText;
 
   FormTextBox(this.label, this.initialVal, this.onSave,
-      {this.controller, this.validator, this.readOnly = false});
+      {this.controller, this.validator, this.readOnly = false, this.obscureText = false});
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +70,7 @@ class FormTextBox extends StatelessWidget {
       controller: controller,
       onSaved: onSave,
       readOnly: readOnly,
+      obscureText: obscureText,
       // validator: validator,
       decoration: InputDecoration(
         border: OutlineInputBorder(

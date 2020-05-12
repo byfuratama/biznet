@@ -35,10 +35,10 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
     super.didChangeDependencies();
   }
 
-  void _selectMenu(BuildContext context, Object id) {
+  void _selectMenu(BuildContext context, Object uid) {
     Navigator.of(context).pushNamed(
       PegawaiEditScreen.routeName,
-      arguments: id,
+      arguments: {'uid': uid},
     );
   }
 
@@ -54,15 +54,8 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
               'Posisi Pegawai: ${item.posisi}',
               'Foto Pegawai: ${item.foto}',
             ],
-            () {
-              Navigator.of(context).pop();
-              _selectMenu(context, item.id);
-            },
-            () {
-              Provider.of<Pegawai>(context).deleteItem(item.id).then((_) {
-                Navigator.of(context).pop();
-              });
-            },
+            null, 
+            null
           );
         });
   }
@@ -73,7 +66,6 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('id-ID', null);
     final pegawaiItems = Provider.of<Pegawai>(context);
     return Scaffold(
       appBar: AppBar(

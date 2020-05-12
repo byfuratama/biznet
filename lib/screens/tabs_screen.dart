@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import './dummy_screen.dart';
 import './home_screen.dart';
 import './report_screen.dart';
 import './my_profile_screen.dart';
 import './search_screen.dart';
+
+import '../providers/pegawai.dart';
 
 class TabsScreen extends StatefulWidget {
   static const routeName = '/tabs-screen';
@@ -51,6 +54,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<Pegawai>(context).fetchAndSet();
     return Scaffold(
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title']),

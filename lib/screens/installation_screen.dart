@@ -90,8 +90,10 @@ class _InstallationScreenState extends State<InstallationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('id-ID', null);
-    final workOrderItems = Provider.of<WorkOrder>(context);
+    final workOrderItems = Provider.of<WorkOrder>(context)
+        .items
+        .where((item) => item.jenis == 'Installasi')
+        .toList();
     return Scaffold(
       appBar: AppBar(
         title: Text('List Installation'),
@@ -109,7 +111,7 @@ class _InstallationScreenState extends State<InstallationScreen> {
             : Container(
                 child: ListView.builder(
                   itemBuilder: (ctx, index) {
-                    var workOrder = workOrderItems.items[index];
+                    var workOrder = workOrderItems[index];
                     var customer = Provider.of<Customer>(context)
                         .findById(workOrder.customer);
                     var equipment = Provider.of<Equipment>(context)
@@ -133,7 +135,7 @@ class _InstallationScreenState extends State<InstallationScreen> {
                       ),
                     );
                   },
-                  itemCount: workOrderItems.items.length,
+                  itemCount: workOrderItems.length,
                 ),
               ),
       ),
