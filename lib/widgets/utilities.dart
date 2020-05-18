@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class ComboBox extends StatelessWidget {
   final String value;
@@ -138,10 +139,14 @@ class DateTimeBox extends StatelessWidget {
 
 class Formatting {
   static String dateDMY(dynamic dt) {
+    if (dt == null)
+      return "";
     final DateTime dateTime = dt is String ? DateTime.parse(dt) : dt;
     return DateFormat("dd MMMM yyyy","ID").format(dateTime);
   }
   static String dateDMYHM(dynamic dt) {
+    if (dt == null)
+      return "";
     final DateTime dateTime = dt is String ? DateTime.parse(dt) : dt;
     return DateFormat("dd MMMM yyyy, HH:mm","ID").format(dateTime);
   }

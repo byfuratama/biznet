@@ -1,3 +1,5 @@
+import 'package:biznet/screens/printing_screen.dart';
+import 'package:biznet/screens/search_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blueGrey,
             primaryColor: Color.fromARGB(255, 0, 0, 125),
-            cardColor: Color.fromARGB(255, 0, 0, 250),
+            cardColor: Color.fromARGB(125, 111, 111, 255),
             backgroundColor: Color.fromARGB(30, 0, 0, 255),
             accentColor: Colors.white,
             fontFamily: 'Lato',
@@ -81,12 +83,19 @@ class MyApp extends StatelessWidget {
                 ),
           ),
           onGenerateRoute: (settings) {
+            final args = settings.arguments as Map;
             var routes = <String, WidgetBuilder>{
               SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(settings.arguments),
               PegawaiEditScreen.routeName: (ctx) => PegawaiEditScreen(settings.arguments),
               InstallationEditScreen.routeName: (ctx) => InstallationEditScreen(settings.arguments),
               MaintenanceEditScreen.routeName: (ctx) => MaintenanceEditScreen(settings.arguments),
               TroubleshootEditScreen.routeName: (ctx) => TroubleshootEditScreen(settings.arguments),
+              SearchResultScreen.routeName: (ctx) => SearchResultScreen(
+                searchCategory: args['search_category'],
+                searchType: args['search_type'],
+                searchQuery: args['search_query'],
+              ),
+              PrintingScreen.routeName: (ctx) => PrintingScreen(settings.arguments),
             };
             WidgetBuilder builder = routes[settings.name];
             return MaterialPageRoute(builder: (ctx) => builder(ctx));

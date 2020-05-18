@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
-import './dummy_screen.dart';
 import '../widgets/app_header.dart';
 import '../screens/survey_report_screen.dart';
 import '../screens/maintenance_report_screen.dart';
@@ -23,11 +20,6 @@ class ReportScreen extends StatelessWidget {
 
   final List<Map<String, Object>> menus = [
     {
-      'title': 'Survey Report',
-      'icon': Icons.assessment,
-      'route': SurveyReportScreen.routeName,
-    },
-    {
       'title': 'Installation Report',
       'icon': Icons.move_to_inbox,
       'route': InstallationReportScreen.routeName,
@@ -41,6 +33,11 @@ class ReportScreen extends StatelessWidget {
       'title': 'Maintenance Report',
       'icon': Icons.build,
       'route': MaintenanceReportScreen.routeName,
+    },
+    {
+      'title': 'Equipment Report',
+      'icon': Icons.business_center,
+      'route': SurveyReportScreen.routeName,
     },
   ];
 

@@ -172,7 +172,7 @@ class _MaintenanceEditScreenState extends State<MaintenanceEditScreen> {
         _formData['wo_close_date'] = woItem.closeDate;
         _formControllers['wo_kode_dp'].text = woItem.kodeDp;
         _formControllers['wo_create_date'].text =
-            Formatting.dateDMYHM(woItem.createdAt);
+            Formatting.dateDMYHM(woItem.createDate);
         _formControllers['wo_close_date'].text =
             Formatting.dateDMYHM(woItem.closeDate);
         _formControllers['eq_cable'].text = _woEquipment.cable;
@@ -242,8 +242,6 @@ class _MaintenanceEditScreenState extends State<MaintenanceEditScreen> {
         WorkOrderItem woItem = WorkOrderItem(
           jenis: _formData['wo_jenis'],
           status: _formData['wo_status'],
-          createDate: _formData['wo_create_date'],
-          closeDate: _formData['wo_close_date'],
           kodeDp: _formData['wo_kode_dp'],
           level: _formData['wo_level'],
           customer: _woCustomer.id,
@@ -311,18 +309,6 @@ class _MaintenanceEditScreenState extends State<MaintenanceEditScreen> {
                       (val) => _formData['wo_kode_dp'] = val,
                       controller: _formControllers['wo_kode_dp'],
                     ),
-                    SizedBox(height: 5),
-                    DateTimeBox(
-                        "Tanggal & Jam Create",
-                        _formData['wo_create_date'],
-                        _formControllers['wo_create_date'],
-                        (val) => changeItem(val, 'wo_create_date')),
-                    SizedBox(height: 5),
-                    DateTimeBox(
-                        "Tanggal & Jam Closed",
-                        _formData['wo_close_date'],
-                        _formControllers['wo_close_date'],
-                        (val) => changeItem(val, 'wo_close_date')),
                     SizedBox(height: 25),
                     ComboBox(_formData['customer'], _customerList, (val) {
                       changeItem(val, 'customer');

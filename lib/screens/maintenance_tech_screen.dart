@@ -3,20 +3,19 @@ import 'package:biznet/providers/customer.dart';
 import 'package:biznet/providers/equipment.dart';
 import 'package:biznet/providers/pegawai.dart';
 import 'package:biznet/providers/work_order.dart';
-import 'package:biznet/screens/printing_screen.dart';
+import 'package:biznet/widgets/mini_detail_modal.dart';
 import 'package:biznet/widgets/mini_detail_modal_tech.dart';
 import 'package:biznet/widgets/numbered_tile.dart';
 import 'package:biznet/widgets/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class InstallationReportScreen extends StatelessWidget {
-  static const routeName = '/installation-report-screen';
-  final jenis = "Installasi";
+class MaintenanceTechScreen extends StatelessWidget {
+  final jenis = "Maintenance";
   final title;
   final pegawai;
 
-  InstallationReportScreen({this.title, this.pegawai});
+  MaintenanceTechScreen({this.title, this.pegawai});
 
   Future<dynamic> _loadFutures(context) async {
     await Provider.of<Pegawai>(context).fetchAndSet();
@@ -25,12 +24,46 @@ class InstallationReportScreen extends StatelessWidget {
     return Provider.of<WorkOrder>(context).fetchWorkOrderWithJenisBy(jenis);
   }
 
-  List<WorkOrderItem> _filterOpen(itemList, uid) {
+  Future<void> _acquireWO(BuildContext context, WorkOrderItem wo) async {
+    WorkOrderItem nwo = WorkOrderItem(
+      createDate: wo.createDate,
+      customer: wo.customer,
+      equipment: wo.equipment,
+      jenis: wo.jenis,
+      kodeDp: wo.kodeDp,
+      level: wo.level,
+      admin: wo.admin,
+      closeDate: wo.closeDate,
+      status: wo.status,
+      survey: wo.survey,
+      teknisi: pegawai.id,
+    );
+    await Provider.of<WorkOrder>(context).updateItem(wo.id, nwo);
+  }
+
+  Future<void> _doneWO(BuildContext context, WorkOrderItem wo) async {
+    WorkOrderItem nwo = WorkOrderItem(
+      createDate: wo.createDate,
+      customer: wo.customer,
+      equipment: wo.equipment,
+      jenis: wo.jenis,
+      kodeDp: wo.kodeDp,
+      level: wo.level,
+      admin: wo.admin,
+      closeDate: DateTime.now().toString(),
+      status: "Close",
+      survey: wo.survey,
+      teknisi: wo.teknisi,
+    );
+    await Provider.of<WorkOrder>(context).updateItem(wo.id, nwo);
+  }
+
+  List<WorkOrderItem> _filterOnProgress(itemList, uid) {
     return itemList.where((item) => item.teknisi == uid && item.status == 'Open').toList();
   }
 
-  List<WorkOrderItem> _filterClosed(itemList, uid) {
-    return itemList.where((item) => item.teknisi == uid && item.status == 'Close').toList();
+  List<WorkOrderItem> _filterAvailable(itemList, uid) {
+    return itemList.where((item) => item.teknisi == null && item.status == 'Open').toList();
   }
 
   @override
@@ -43,11 +76,11 @@ class InstallationReportScreen extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Installation Work Order Report'),
+            title: title,
             bottom: TabBar(
               tabs: <Widget>[
-                Tab(text: "Open"),
-                Tab(text: "Closed"),
+                Tab(text: "On Progress"),
+                Tab(text: "Available"),
               ],
             ),
           ),
@@ -56,25 +89,25 @@ class InstallationReportScreen extends StatelessWidget {
               builder: (context, snapshot) {
                 final uid = Provider.of<Auth>(context).userId;
                 final tid = Provider.of<Pegawai>(context).findByUid(uid).id;
-                Widget openWO;
-                Widget closedWO;
+                Widget onProgress;
+                Widget available;
                 if (snapshot.hasData) {
                   List<WorkOrderItem> itemList = snapshot.data;
-                  openWO = _hasData(_filterOpen(itemList, pegawai.id), _showBottomModal);
-                  closedWO = _hasData(_filterClosed(itemList, pegawai.id), _showBottomModal);
+                  onProgress = _hasData(_filterOnProgress(itemList, pegawai.id), _showBottomModalOnProgress);
+                  available = _hasData(_filterAvailable(itemList, pegawai.id), _showBottomModalAvailable);
                 } else {
                   if (emptyProvider) {
-                    openWO = _noData();
-                    closedWO = _noData();
+                    onProgress = _noData();
+                    available = _noData();
                   } else {
                     final itemList = Provider.of<WorkOrder>(context).filterWorkOrderWithJenisBy(jenis);
-                    openWO = _hasData(_filterOpen(itemList, tid), _showBottomModal);
-                    closedWO = _hasData(_filterClosed(itemList, tid), _showBottomModal);
+                    onProgress = _hasData(_filterOnProgress(itemList, tid), _showBottomModalOnProgress);
+                    available = _hasData(_filterAvailable(itemList, tid), _showBottomModalAvailable);
                   }
                 }
                 return TabBarView(children: [
-                  openWO,
-                  closedWO,
+                  onProgress,
+                  available,
                 ]);
               }),
         ));
@@ -90,13 +123,11 @@ class InstallationReportScreen extends StatelessWidget {
           final admin = Provider.of<Pegawai>(context).findById(item.admin);
           final teknisi = Provider.of<Pegawai>(context).findById(item.teknisi);
           return InkWell(
-            onTap: () => _showBottomModal(context, item, customer, equipment, admin, teknisi),
+            onTap: () => modal(context, item, customer, equipment, teknisi, admin),
             child: NumberedTile(
               index + 1,
               [
                 customer.nama,
-                item.id,
-                customer.alamat,
                 Formatting.dateDMYHM(item.createDate),
               ],
               Chip(
@@ -123,17 +154,15 @@ class InstallationReportScreen extends StatelessWidget {
     );
   }
 
-  void _selectMenu(BuildContext context, Object id) {
-    Navigator.of(context).pushNamed(
-      PrintingScreen.routeName,
-      arguments: {
-        'work_order_id': id
-      },
-    );
-  }
-
-  void _showBottomModal(BuildContext context, WorkOrderItem item, CustomerItem customer, EquipmentItem equipment, PegawaiItem teknisi, PegawaiItem admin,) {
-    // final customerItem = 
+  void _showBottomModalAvailable(
+    BuildContext context,
+    WorkOrderItem item,
+    CustomerItem customer,
+    EquipmentItem equipment,
+    PegawaiItem teknisi,
+    PegawaiItem admin,
+  ) {
+    // final customerItem =
     showModalBottomSheet(
         context: context,
         builder: (_) {
@@ -151,11 +180,45 @@ class InstallationReportScreen extends StatelessWidget {
               'Admin: ${admin?.nama ?? "Belum Ada"}',
             ],
             action1: () {
-              _selectMenu(context, item.id);
+              Navigator.of(context).pop();
+              _acquireWO(context, item);
             },
-            action1Icon: Icon(Icons.picture_as_pdf),
+            action1Icon: Icon(Icons.add),
           );
         });
   }
 
+  void _showBottomModalOnProgress(
+    BuildContext context,
+    WorkOrderItem item,
+    CustomerItem customer,
+    EquipmentItem equipment,
+    PegawaiItem teknisi,
+    PegawaiItem admin,
+  ) {
+    // final customerItem =
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return MiniDetailModalTech(
+            [
+              'Work Order Jenis: ${item.jenis}',
+              'Work Order Level: ${item.level}',
+              'Work Order Create: ${item.createDate}',
+              'Work Order Close: ${item.closeDate}',
+              'Work Order Status: ${item.status}',
+              'Work Order Kode DP: ${item.kodeDp}',
+              'Customer: ${customer.nama}',
+              'Equipment: ${equipment.cable}, ${equipment.closure}, ${equipment.pigtail}, ${equipment.splicer}, ${equipment.ont}',
+              'Teknisi: ${teknisi?.nama ?? "Belum Ada"}',
+              'Admin: ${admin?.nama ?? "Belum Ada"}',
+            ],
+            action1: () {
+              Navigator.of(context).pop();
+              _doneWO(context, item);
+            },
+            action1Icon: Icon(Icons.check),
+          );
+        });
+  }
 }

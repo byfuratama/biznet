@@ -10,7 +10,6 @@ class NumberedTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).cardColor.withAlpha(25),
       child: ListTile(
         leading: CircleAvatar(
           child: Text(index.toString()),

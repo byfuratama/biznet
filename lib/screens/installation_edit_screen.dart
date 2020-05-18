@@ -12,9 +12,9 @@ import '../providers/work_order.dart';
 
 class InstallationEditScreen extends StatefulWidget {
   static const routeName = '/installation-edit-screen';
-  final dataId;
+  final data;
 
-  InstallationEditScreen(this.dataId);
+  InstallationEditScreen(this.data);
 
   @override
   _InstallationEditScreenState createState() => _InstallationEditScreenState();
@@ -44,6 +44,8 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
     'admin': '',
   };
 
+  String _installationId;
+  String _surveyId;
   Map<String, TextEditingController> _formControllers;
 
   Map<String, List> _items = {
@@ -108,6 +110,8 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
       'teknisi': TextEditingController(),
       'admin': TextEditingController(),
     };
+    _installationId = widget.data['work_order_id'] ?? null;
+    _surveyId = widget.data['survey_id'] ?? null;
     super.initState();
   }
 
@@ -157,7 +161,7 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
   void didChangeDependencies() {
     if (_triggerOnce) return;
     loadProvider().then((_) {
-      final String id = widget.dataId;
+      final String id = _installationId;
       if (id != null && id != '') {
         WorkOrderItem woItem =
             Provider.of<WorkOrder>(context, listen: false).findById(id);
@@ -173,7 +177,7 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
         _formData['wo_close_date'] = woItem.closeDate;
         _formControllers['wo_kode_dp'].text = woItem.kodeDp;
         _formControllers['wo_create_date'].text =
-            Formatting.dateDMYHM(woItem.createdAt);
+            Formatting.dateDMYHM(woItem.createDate);
         _formControllers['wo_close_date'].text =
             Formatting.dateDMYHM(woItem.closeDate);
       }
@@ -184,7 +188,7 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
 
   void loadSurveyData() {
     final survey = Provider.of<Survey>(context, listen: false)
-        .findById(_formData['survey']);
+        .findById(_surveyId ?? _formData['survey']);
     _woCustomer =
         Provider.of<Customer>(context, listen: false).findById(survey.customer);
     _woEquipment = Provider.of<Equipment>(context, listen: false)
@@ -207,7 +211,7 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
   bool _isLoading = false;
   Future<void> _saveForm() async {
     final isValid = _formKey.currentState.validate();
-    final id = widget.dataId;
+    final id = _installationId;
     if (!isValid) {
       return;
     }
@@ -239,8 +243,6 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
         WorkOrderItem woItem = WorkOrderItem(
           jenis: _formData['wo_jenis'],
           status: _formData['wo_status'],
-          createDate: _formData['wo_create_date'],
-          closeDate: _formData['wo_close_date'],
           customer: _woCustomer.id,
           equipment: _woEquipment.id,
           survey: _formData['survey'],
@@ -276,8 +278,9 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
   @override
   Widget build(BuildContext context) {
     String title =
-        widget.dataId != '' ? "Edit Installation" : "New Installation";
+        _installationId != null ? "Edit Installation" : "New Installation";
     // print('RENDER RENDER');
+    bool isFromSurvey = _surveyId != null;
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -309,68 +312,56 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
                       (val) => _formData['wo_kode_dp'] = val,
                       controller: _formControllers['wo_kode_dp'],
                     ),
-                    SizedBox(height: 5),
-                    DateTimeBox(
-                        "Tanggal & Jam Create",
-                        _formData['wo_create_date'],
-                        _formControllers['wo_create_date'],
-                        (val) => changeItem(val, 'wo_create_date')),
-                    SizedBox(height: 5),
-                    DateTimeBox(
-                        "Tanggal & Jam Closed",
-                        _formData['wo_close_date'],
-                        _formControllers['wo_close_date'],
-                        (val) => changeItem(val, 'wo_close_date')),
-                    SizedBox(height: 5),
-                    ComboBox(_formData['survey'], _surveyList, (val) {
-                      changeItem(val, 'survey');
-                      loadSurveyData();
-                    }),
+                    // if (isFromSurvey)
+                    // ComboBox(_formData['survey'], _surveyList, (val) {
+                    //   changeItem(val, 'survey');
+                    //   loadSurveyData();
+                    // }),
                     SizedBox(height: 25),
                     FormTextBox("Nama Customer", _formData['cust_nama'],
                         (val) => _formData['cust_nama'] = val,
                         controller: _formControllers['cust_nama'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("No HP", _formData['cust_nohp'],
                         (val) => _formData['cust_nohp'] = val,
                         controller: _formControllers['cust_nohp'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("Alamat", _formData['cust_alamat'],
                         (val) => _formData['cust_alamat'] = val,
                         controller: _formControllers['cust_alamat'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("Email", _formData['cust_email'],
                         (val) => _formData['cust_email'] = val,
                         controller: _formControllers['cust_email'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     SizedBox(height: 25),
                     FormTextBox("Kabel", _formData['eq_cable'],
                         (val) => _formData['eq_cable'] = val,
                         controller: _formControllers['eq_cable'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("Closure", _formData['eq_closure'],
                         (val) => _formData['eq_closure'] = val,
                         controller: _formControllers['eq_closure'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("Pigtail", _formData['eq_pigtail'],
                         (val) => _formData['eq_pigtail'] = val,
                         controller: _formControllers['eq_pigtail'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("Splicer", _formData['eq_splicer'],
                         (val) => _formData['eq_splicer'] = val,
                         controller: _formControllers['eq_splicer'],
-                        readOnly: true),
+                        readOnly: isFromSurvey),
                     SizedBox(height: 5),
                     FormTextBox("Ont", _formData['eq_ont'],
                         (val) => _formData['eq_ont'] = val,
-                        controller: _formControllers['eq_ont'], readOnly: true),
+                        controller: _formControllers['eq_ont'], readOnly: isFromSurvey),
                   ],
                 ),
               ),

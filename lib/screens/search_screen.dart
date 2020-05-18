@@ -1,6 +1,5 @@
+import 'package:biznet/screens/search_result_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-
 import '../widgets/app_header.dart';
 import '../widgets/utilities.dart';
 
@@ -19,13 +18,22 @@ class _SearchScreenState extends State<SearchScreen> {
     'Customer Name',
     'Equipment ID',
   ];
+  List _searchType = [
+    'Work Order',
+    'Customer',
+    'Equipment',
+  ];
   List<DropdownMenuItem<String>> _searchCategoryItems;
   String _currentCategory;
+  List<DropdownMenuItem<String>> _searchTypeItems;
+  String _currentType;
 
   @override
   void initState() {
-    _searchCategoryItems = getDropDownMenuItems();
+    _searchCategoryItems = getCategoryMenuItems();
     _currentCategory = _searchCategoryItems[0].value;
+    _searchTypeItems = getTypeMenuItems();
+    _currentType = _searchTypeItems[0].value;
     _searchController = TextEditingController();
     super.initState();
   }
@@ -36,7 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
+  List<DropdownMenuItem<String>> getCategoryMenuItems() {
     List<DropdownMenuItem<String>> items = new List();
     for (var i = 0; i < _searchCategories.length; i++) {
       items.add(new DropdownMenuItem(
@@ -44,7 +52,32 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Text(_searchCategories[i]),
       ));
     }
+    items.map((e) => print(e.toString()));
     return items;
+  }
+
+  List<DropdownMenuItem<String>> getTypeMenuItems() {
+    List<DropdownMenuItem<String>> items = new List();
+    for (var i = 0; i < _searchType.length; i++) {
+      items.add(new DropdownMenuItem(
+        value: i.toString(),
+        child: Text(_searchType[i]),
+      ));
+    }
+    return items;
+  }
+
+  void _searchResult() {
+    final types = ['wo','cust','eq'];
+    final cats = ['id','name'];
+    Navigator.of(context).pushNamed(
+      SearchResultScreen.routeName,
+      arguments: {
+        'search_type' : types[int.parse( _currentType)],
+        'search_category' : cats[int.parse( _currentCategory)],
+        'search_query' : _searchController.text
+      }
+    );
   }
 
   Widget createForm(BuildContext context) {
@@ -53,6 +86,8 @@ class _SearchScreenState extends State<SearchScreen> {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       children: <Widget>[
+        ComboBox(_currentType, _searchTypeItems, changeType),
+        SizedBox(height: 10),
         ComboBox(_currentCategory, _searchCategoryItems, changeCategory),
         SizedBox(height: 10),
         TextBox(
@@ -62,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         SizedBox(height: 10),
         RaisedButton(
-          onPressed: () => print(_searchQuery),
+          onPressed: () => _searchResult(),
           color: Colors.blueAccent,
           child: Text(
             'SEARCH',
@@ -76,6 +111,21 @@ class _SearchScreenState extends State<SearchScreen> {
   void changeCategory(String selectedCategory) {
     setState(() {
       _currentCategory = selectedCategory;
+      _searchController.text = '';
+    });
+  }
+
+  void changeType(String selectedType) {
+    setState(() {
+      _currentType = selectedType;
+      if (_currentType == '0')
+        _searchCategories = ["Work Order ID"];
+      else if (_currentType == '1')
+        _searchCategories = ["Customer ID", "Customer Name"];
+      else if (_currentType == '2') _searchCategories = ["Equipment ID"];
+      _searchCategoryItems.clear();
+      _searchCategoryItems = getCategoryMenuItems();
+      _currentCategory = _searchCategoryItems[0].value;
       _searchController.text = '';
     });
   }

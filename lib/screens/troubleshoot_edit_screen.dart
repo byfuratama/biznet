@@ -172,7 +172,7 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
         _formData['wo_close_date'] = woItem.closeDate;
         _formControllers['wo_kode_dp'].text = woItem.kodeDp;
         _formControllers['wo_create_date'].text =
-            Formatting.dateDMYHM(woItem.createdAt);
+            Formatting.dateDMYHM(woItem.createDate);
         _formControllers['wo_close_date'].text =
             Formatting.dateDMYHM(woItem.closeDate);
         _formControllers['eq_cable'].text = _woEquipment.cable;

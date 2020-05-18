@@ -17,14 +17,11 @@ class WorkOrderItem {
   final teknisi;
   final admin;
   final status;
-  final createdAt;
 
   WorkOrderItem({
     this.id,
     @required this.jenis,
     @required this.level,
-    @required this.createDate,
-    this.closeDate,
     @required this.kodeDp,
     this.survey,
     @required this.customer,
@@ -32,7 +29,8 @@ class WorkOrderItem {
     this.teknisi,
     this.admin,
     this.status,
-    this.createdAt
+    this.createDate,
+    this.closeDate,
   });
 }
 
@@ -87,7 +85,6 @@ class WorkOrder with ChangeNotifier {
           teknisi: data['teknisi'],
           admin: data['admin'],
           status: data['status'],
-          createdAt: data['createdAt'],
         ));
       });
       _items = loadedProducts;
@@ -95,6 +92,19 @@ class WorkOrder with ChangeNotifier {
     } catch (error) {
       throw error;
     }
+  }
+
+  Future<List> fetchWorkOrderWithJenisBy(String jenis) async {
+    try {
+      await fetchAndSet();
+      return _items.where((item) => item.jenis == jenis).toList();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  List<WorkOrderItem> filterWorkOrderWithJenisBy(String jenis) {
+    return _items.where((item) => item.jenis == jenis).toList();
   }
 
   Future<void> addItem(WorkOrderItem item) async {
@@ -106,8 +116,7 @@ class WorkOrder with ChangeNotifier {
         body: json.encode({
           'jenis': item.jenis,
           'level': level2Int(item.level),
-          'createDate': item.createDate,
-          'closeDate': item.closeDate,
+          'createDate': createdAt,
           'kodeDp': item.kodeDp,
           'survey': item.survey,
           'customer': item.customer,
@@ -115,7 +124,6 @@ class WorkOrder with ChangeNotifier {
           'teknisi': item.teknisi,
           'admin': item.admin,
           'status': item.status,
-          'createdAt': createdAt,
         }),
       );
 
@@ -132,7 +140,6 @@ class WorkOrder with ChangeNotifier {
         teknisi: item.teknisi,
         admin: item.admin,
         status: item.status,
-        createdAt: createdAt,
       );
       _items.add(newItem);
       notifyListeners();
@@ -153,7 +160,6 @@ class WorkOrder with ChangeNotifier {
           'level': level2Int(item.level),
           'createDate': item.createDate,
           'closeDate': item.closeDate,
-          'closeDate': item.closeDate,
           'kodeDp': item.kodeDp,
           'survey': item.survey,
           'customer': item.customer,
@@ -161,13 +167,12 @@ class WorkOrder with ChangeNotifier {
           'teknisi': item.teknisi,
           'admin': item.admin,
           'status': item.status,
-          'createdAt': item.createdAt,
         }),
       );
       _items[itemIndex] = item;
       notifyListeners();
     } else {
-      print('...');
+      print('... ${item.id}');
     }
   }
 

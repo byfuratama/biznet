@@ -1,17 +1,25 @@
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:biznet/providers/pegawai.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/http_exception.dart';
 
+enum AuthType {Admin, Teknisi, Supervisor}
+
+AuthType getCurrentAuth() {
+  return AuthType.Admin;
+}
+
 class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
   Timer _authTimer;
+  PegawaiItem pegawai;
 
   bool get isAuth {
     return token != null;
@@ -28,6 +36,26 @@ class Auth with ChangeNotifier {
 
   String get userId {
     return _userId;
+  }
+
+  Future<void> fetchPegawai() async {
+    final String url = "https://biznet-3624b.firebaseio.com/pegawais.json";
+    final response = await http.get(url);
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    extractedData.forEach((key, data) {
+      if (_userId == data['uid']) {
+        // print('$_userId == ${data['uid']}');
+        pegawai = PegawaiItem(
+          id: key,
+          uid: data['uid'],
+          nama: data['nama'],
+          posisi: data['posisi'],
+          noHp: data['noHp'],
+          foto: data['foto'],
+          createdAt: data['createdAt'],
+        );
+      }
+    });
   }
 
   Future<String> registerUser(
@@ -92,6 +120,7 @@ class Auth with ChangeNotifier {
           'expiryDate': _expiryDate.toIso8601String(),
         },
       );
+      fetchPegawai();
       prefs.setString('userData', userData);
     } catch (error) {
       throw error;

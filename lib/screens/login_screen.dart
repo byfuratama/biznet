@@ -71,12 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
         errorMessage = 'Invalid password.';
       }
       _showErrorDialog(errorMessage);
-      print({'err' : error});
+      print({'err': error});
     } catch (error) {
-      const errorMessage =
-          'Tidak bisa login. Mohon coba lagi';
+      const errorMessage = 'Tidak bisa login. Mohon coba lagi';
       _showErrorDialog(errorMessage);
-      print({'error' : error});
+      print({'error': error});
     }
 
     setState(() {
@@ -125,8 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: <Widget>[
                     Text(
                       'Login',
-                      style: theme.textTheme.display2
-                          .copyWith(color: Colors.white),
+                      style: theme.textTheme.display2.copyWith(color: Colors.white),
                     ),
                     SizedBox(height: 15),
                     Form(
@@ -138,8 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: <Widget>[
                             TextFormField(
                               initialValue: 'fefe@biznet.com',
-                              decoration:
-                                  boxDecoration.copyWith(labelText: 'Username'),
+                              decoration: boxDecoration.copyWith(labelText: 'Username'),
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return 'Please enter some text';
@@ -154,8 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextFormField(
                               initialValue: 'fefefefe',
                               obscureText: true,
-                              decoration:
-                                  boxDecoration.copyWith(labelText: 'Password'),
+                              decoration: boxDecoration.copyWith(labelText: 'Password'),
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return 'Please enter some text';
