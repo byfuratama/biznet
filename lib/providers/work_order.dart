@@ -32,6 +32,10 @@ class WorkOrderItem {
     this.createDate,
     this.closeDate,
   });
+
+  String get idn {
+    return id.toString().codeUnits.fold('',(value, element) => '$value${element%10}').substring(5,12);
+  }
 }
 
 class WorkOrder with ChangeNotifier {

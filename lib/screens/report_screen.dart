@@ -1,17 +1,16 @@
+import 'package:biznet/screens/report_preview_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/app_header.dart';
-import '../screens/survey_report_screen.dart';
-import '../screens/maintenance_report_screen.dart';
-import '../screens/installation_report_screen.dart';
-import '../screens/troubleshoot_report_screen.dart';
 
 class ReportScreen extends StatelessWidget {
-  void selectMenu(BuildContext context, String route) {
-    Navigator.of(context)
-        .pushNamed(
-      route,
-    )
-        .then((result) {
+  void selectMenu(BuildContext context, String type, String method) {
+    Navigator.of(context).pushNamed(
+      ReportPreviewScreen.routeName,
+      arguments: {
+        'report_type': type,
+        'report_method': method,
+      },
+    ).then((result) {
       if (result != null) {
         // removeItem(result);
       }
@@ -20,24 +19,28 @@ class ReportScreen extends StatelessWidget {
 
   final List<Map<String, Object>> menus = [
     {
-      'title': 'Installation Report',
-      'icon': Icons.move_to_inbox,
-      'route': InstallationReportScreen.routeName,
+      'title': 'Daily Work Order Report',
+      'icon': Icons.assignment,
+      'type': 'wo',
+      'method': 'daily',
     },
     {
-      'title': 'Troubleshoot Report',
-      'icon': Icons.call,
-      'route': TroubleshootReportScreen.routeName,
-    },
-    {
-      'title': 'Maintenance Report',
+      'title': 'Daily Equipment Report',
       'icon': Icons.build,
-      'route': MaintenanceReportScreen.routeName,
+      'type': 'eq',
+      'method': 'daily',
     },
     {
-      'title': 'Equipment Report',
-      'icon': Icons.business_center,
-      'route': SurveyReportScreen.routeName,
+      'title': 'Monthly Work Order Report',
+      'icon': Icons.assignment,
+      'type': 'wo',
+      'method': 'monthly',
+    },
+    {
+      'title': 'Monthly Equipment Report',
+      'icon': Icons.build,
+      'type': 'eq',
+      'method': 'monthly',
     },
   ];
 
@@ -51,7 +54,7 @@ class ReportScreen extends StatelessWidget {
               (menu) => Card(
                 color: Colors.blueAccent,
                 child: InkWell(
-                  onTap: () => selectMenu(context, menu['route']),
+                  onTap: () => selectMenu(context, menu['type'], menu['method']),
                   child: ListTile(
                     leading: Icon(
                       menu['icon'],
@@ -59,8 +62,7 @@ class ReportScreen extends StatelessWidget {
                     ),
                     title: Text(
                       menu['title'],
-                      style: theme.textTheme.display1
-                          .copyWith(color: Colors.white),
+                      style: theme.textTheme.display1.copyWith(color: Colors.white),
                     ),
                   ),
                 ),
@@ -78,7 +80,7 @@ class ReportScreen extends StatelessWidget {
       height: 600,
       child: Column(
         children: <Widget>[
-          AppHeader('Work Order Report'),
+          AppHeader('Reporting'),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
             child: createMenu(context),

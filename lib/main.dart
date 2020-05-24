@@ -1,5 +1,7 @@
 import 'package:biznet/screens/printing_screen.dart';
+import 'package:biznet/screens/report_preview_screen.dart';
 import 'package:biznet/screens/search_result_screen.dart';
+import 'package:biznet/widgets/report_previewer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -70,6 +72,7 @@ class MyApp extends StatelessWidget {
             cardColor: Color.fromARGB(125, 111, 111, 255),
             backgroundColor: Color.fromARGB(30, 0, 0, 255),
             accentColor: Colors.white,
+            accentIconTheme: IconThemeData(color: Colors.white),
             fontFamily: 'Lato',
             textTheme: ThemeData.light().textTheme.copyWith(
                   display1: TextStyle(
@@ -96,6 +99,10 @@ class MyApp extends StatelessWidget {
                 searchQuery: args['search_query'],
               ),
               PrintingScreen.routeName: (ctx) => PrintingScreen(settings.arguments),
+              ReportPreviewScreen.routeName: (ctx) => ReportPreviewScreen(
+                reportMethod: args['report_method'],
+                reportType: args['report_type'],
+              ),
             };
             WidgetBuilder builder = routes[settings.name];
             return MaterialPageRoute(builder: (ctx) => builder(ctx));

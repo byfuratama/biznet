@@ -139,13 +139,19 @@ class DateTimeBox extends StatelessWidget {
 
 class Formatting {
   static String dateDMY(dynamic dt) {
-    if (dt == null)
+    if (DateTime.tryParse(dt.toString()) == null)
       return "";
     final DateTime dateTime = dt is String ? DateTime.parse(dt) : dt;
     return DateFormat("dd MMMM yyyy","ID").format(dateTime);
   }
+  static String dateMY(dynamic dt) {
+    if (DateTime.tryParse(dt.toString()) == null)
+      return "";
+    final DateTime dateTime = dt is String ? DateTime.parse(dt) : dt;
+    return DateFormat("MMMM yyyy","ID").format(dateTime);
+  }
   static String dateDMYHM(dynamic dt) {
-    if (dt == null)
+    if (DateTime.tryParse(dt.toString()) == null)
       return "";
     final DateTime dateTime = dt is String ? DateTime.parse(dt) : dt;
     return DateFormat("dd MMMM yyyy, HH:mm","ID").format(dateTime);
