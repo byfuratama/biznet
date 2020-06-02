@@ -17,6 +17,7 @@ class WorkOrderItem {
   final teknisi;
   final admin;
   final status;
+  final kendala;
 
   WorkOrderItem({
     this.id,
@@ -29,12 +30,17 @@ class WorkOrderItem {
     this.teknisi,
     this.admin,
     this.status,
+    this.kendala,
     this.createDate,
     this.closeDate,
   });
 
   String get idn {
     return id.toString().codeUnits.fold('',(value, element) => '$value${element%10}').substring(5,12);
+  }
+  String get custIdn {
+    if (customer == "") return "";
+    return customer.toString().codeUnits.fold('',(value, element) => '$value${element%10}').substring(5,12);
   }
 }
 
@@ -45,6 +51,24 @@ class WorkOrder with ChangeNotifier {
 
   List<WorkOrderItem> get items {
     return [..._items];
+  }
+
+  WorkOrderItem get emptyWo {
+    return WorkOrderItem(
+      id : "",
+      jenis : "",
+      level : "",
+      createDate : "",
+      closeDate : "",
+      kodeDp : "",
+      survey : "",
+      customer : "",
+      equipment : "",
+      teknisi : "",
+      admin : "",
+      status : "",
+      kendala : "",
+    );
   }
 
   int level2Int(String level) {
@@ -63,6 +87,11 @@ class WorkOrder with ChangeNotifier {
 
   WorkOrderItem findById(String id) {
     return _items.firstWhere((item) => item.id == id);
+  }
+
+  WorkOrderItem findByEqId(String id) {
+    final wo = _items.firstWhere((item) => item.equipment == id, orElse: () => null );
+    return wo ?? emptyWo;
   }
 
   WorkOrderItem findLast() {
@@ -89,6 +118,7 @@ class WorkOrder with ChangeNotifier {
           teknisi: data['teknisi'],
           admin: data['admin'],
           status: data['status'],
+          kendala: data['kendala'],
         ));
       });
       _items = loadedProducts;
@@ -128,6 +158,7 @@ class WorkOrder with ChangeNotifier {
           'teknisi': item.teknisi,
           'admin': item.admin,
           'status': item.status,
+          'kendala': item.kendala,
         }),
       );
 
@@ -144,6 +175,7 @@ class WorkOrder with ChangeNotifier {
         teknisi: item.teknisi,
         admin: item.admin,
         status: item.status,
+        kendala: item.kendala,
       );
       _items.add(newItem);
       notifyListeners();
@@ -171,6 +203,7 @@ class WorkOrder with ChangeNotifier {
           'teknisi': item.teknisi,
           'admin': item.admin,
           'status': item.status,
+          'kendala': item.kendala,
         }),
       );
       _items[itemIndex] = item;

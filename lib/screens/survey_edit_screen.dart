@@ -34,7 +34,7 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
 
   Map<String, List> _items = {
     'paket_list': ['Home', 'Metronet', 'Dedicated', 'Hospitality'],
-    'status_list': ['Open Net', 'Off Net'],
+    'status_list': ['On Net', 'Off Net'],
   };
 
   void changeItem(String selectedItems, String fd) {

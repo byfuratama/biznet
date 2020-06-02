@@ -88,7 +88,7 @@ class ReportPreviewerState extends State<ReportPreviewer> with SingleTickerProvi
 
     final Directory appDocDir = await getApplicationDocumentsDirectory();
     final String appDocPath = appDocDir.path;
-    final File file = File(appDocPath + '/' + 'document.pdf');
+    final File file = File(appDocPath + '/' + '${widget.reportTitle}.pdf');
     print('Save as file ${file.path} ...');
     await file.writeAsBytes(bytes);
     OpenFile.open(file.path);

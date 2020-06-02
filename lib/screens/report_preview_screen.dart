@@ -63,7 +63,8 @@ class _ReportPreviewScreenState extends State<ReportPreviewScreen> {
       return <String>[item.idn, Formatting.dateDMY(item.closeDate), cust.idn, cust.nama, cust.alamat, cust.paket, eq.idn];
     };
     final Function mapEq = (EquipmentItem item) {
-      return <String>[item.idn, item.cable, item.closure, item.pigtail, item.splicer, item.ont];
+      WorkOrderItem wo = Provider.of<WorkOrder>(context).findByEqId(item.id);
+      return <String>[item.idn, wo.custIdn, item.cable, item.closure, item.pigtail, item.splicer, item.ont];
     };
 
     final its = items
@@ -87,7 +88,7 @@ class _ReportPreviewScreenState extends State<ReportPreviewScreen> {
     if (isWO)
       return ['WO ID', 'Finish Date', 'Cust ID', 'Nama', 'Alamat', 'Paket', 'Equipment ID'];
     else
-      return ['Equipment ID', 'Cable', 'Closure', 'Pigtail', 'Splicer', 'ONT'];
+      return ['Equipment ID', 'Customer ID', 'Cable', 'Closure', 'Pigtail', 'Splicer', 'ONT'];
   }
 
   @override
