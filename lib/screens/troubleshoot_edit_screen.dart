@@ -29,6 +29,8 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
     'wo_create_date': '',
     'wo_close_date': '',
     'wo_kode_dp': '',
+    'wo_kendala': '',
+    'wo_password': '',
     'survey': '',
     'cust_nama': '',
     'cust_nohp': '',
@@ -96,6 +98,8 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
       'wo_kode_dp': TextEditingController(),
       'wo_create_date': TextEditingController(),
       'wo_close_date': TextEditingController(),
+      'wo_kendala': TextEditingController(),
+      'wo_password': TextEditingController(),
       'cust_nama': TextEditingController(),
       'cust_nohp': TextEditingController(),
       'cust_alamat': TextEditingController(),
@@ -170,6 +174,8 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
         _formData['wo_status'] = woItem.status;
         _formData['wo_create_date'] = woItem.createDate;
         _formData['wo_close_date'] = woItem.closeDate;
+        _formData['wo_kendala'] = woItem.kendala;
+        _formData['wo_password'] = woItem.password;
         _formControllers['wo_kode_dp'].text = woItem.kodeDp;
         _formControllers['wo_create_date'].text =
             Formatting.dateDMYHM(woItem.createDate);
@@ -229,6 +235,8 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
           closeDate: _formData['wo_close_date'],
           kodeDp: _formData['wo_kode_dp'],
           level: _formData['wo_level'],
+          kendala: _formData['wo_kendala'],
+          password: _formData['wo_password'],
           customer: _woCustomer.id,
           equipment: equipment.id,
           admin: admin.id
@@ -246,6 +254,8 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
           closeDate: _formData['wo_close_date'],
           kodeDp: _formData['wo_kode_dp'],
           level: _formData['wo_level'],
+          kendala: _formData['wo_kendala'],
+          password: _formData['wo_password'],
           customer: _woCustomer.id,
           equipment: equipment.id,
           admin: admin.id
@@ -310,6 +320,20 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
                       _formData['wo_kode_dp'],
                       (val) => _formData['wo_kode_dp'] = val,
                       controller: _formControllers['wo_kode_dp'],
+                    ),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                      "Kendala",
+                      _formData['wo_kendala'],
+                      (val) => _formData['wo_kendala'] = val,
+                      controller: _formControllers['wo_kendala'],
+                    ),
+                    SizedBox(height: 5),
+                    FormTextBox(
+                      "Password Dial",
+                      _formData['wo_password'],
+                      (val) => _formData['wo_password'] = val,
+                      controller: _formControllers['wo_password'],
                     ),
                     SizedBox(height: 5),
                     DateTimeBox(

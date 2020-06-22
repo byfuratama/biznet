@@ -19,6 +19,7 @@ class SurveyEditScreen extends StatefulWidget {
 class _SurveyEditScreenState extends State<SurveyEditScreen> {
   final _form = GlobalKey<FormState>();
   Map<String, String> _formData = {
+    'cust_number': '',
     'cust_nama': '',
     'cust_nohp': '',
     'cust_alamat': '',
@@ -70,11 +71,13 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
 
   @override
   void didChangeDependencies() {
+    print(widget.dataId);
     final String id = widget.dataId;
     if (id != null && id != '') {
       SurveyItem svItem = Provider.of<Survey>(context, listen: false).findById(id);
       CustomerItem custItem = Provider.of<Customer>(context, listen: false).findById(svItem.customer);
       EquipmentItem eqItem = Provider.of<Equipment>(context, listen: false).findById(svItem.equipment);
+      _formData['cust_number'] = custItem.number;
       _formData['cust_nama'] = custItem.nama;
       _formData['cust_nohp'] = custItem.nohp;
       _formData['cust_alamat'] = custItem.alamat;
@@ -103,6 +106,7 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
       _isLoading = true;
     });
     CustomerItem custItem = CustomerItem(
+      number: _formData['cust_number'],
       nama: _formData['cust_nama'],
       nohp: _formData['cust_nohp'],
       alamat: _formData['cust_alamat'],
@@ -189,6 +193,9 @@ class _SurveyEditScreenState extends State<SurveyEditScreen> {
                 key: _form,
                 child: Column(
                   children: <Widget>[
+                    FormTextBox("Nomor Customer", _formData['cust_number'],
+                        (val) => _formData['cust_number'] = val),
+                    SizedBox(height: 5),
                     FormTextBox("Nama Customer", _formData['cust_nama'],
                         (val) => _formData['cust_nama'] = val),
                     SizedBox(height: 5),

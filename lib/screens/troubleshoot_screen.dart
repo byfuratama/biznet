@@ -14,7 +14,7 @@ class TroubleshootScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var pegawai = Provider.of<Auth>(context).pegawai;
-    return pegawai.posisi != "Admin" ? 
+    return pegawai.posisi == "Teknisi" ? 
       TroubleshootTechScreen(title: title, pegawai: pegawai)
       : TroubleshootAdminScreen(title: title, pegawai: pegawai);
   }

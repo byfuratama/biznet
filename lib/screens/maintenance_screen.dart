@@ -14,7 +14,7 @@ class MaintenanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var pegawai = Provider.of<Auth>(context).pegawai;
-    return pegawai.posisi != "Admin" ? 
+    return pegawai.posisi == "Teknisi" ? 
       MaintenanceTechScreen(title: title, pegawai: pegawai)
       : MaintenanceAdminScreen(title: title, pegawai: pegawai);
   }

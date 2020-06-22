@@ -10,18 +10,17 @@ import 'package:biznet/widgets/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class TroubleshootTechScreen extends StatelessWidget {
-  final jenis = "Troubleshoot";
+class HistoryViewScreen extends StatelessWidget {
   final title;
   final pegawai;
 
-  TroubleshootTechScreen({this.title, this.pegawai});
+  HistoryViewScreen({this.title, this.pegawai});
 
   Future<dynamic> _loadFutures(context) async {
     await Provider.of<Pegawai>(context).fetchAndSet();
     await Provider.of<Customer>(context).fetchAndSet();
     await Provider.of<Equipment>(context).fetchAndSet();
-    return Provider.of<WorkOrder>(context).fetchWorkOrderWithJenisBy(jenis);
+    return Provider.of<WorkOrder>(context).fetchWorkOrder();
   }
 
   Future<void> _acquireWO(BuildContext context, WorkOrderItem wo) async {
@@ -59,11 +58,11 @@ class TroubleshootTechScreen extends StatelessWidget {
   }
 
   List<WorkOrderItem> _filterOnProgress(itemList, uid) {
-    return itemList.where((item) => item.teknisi == uid && item.status == 'Open').toList();
+    return itemList.where((item) => item.status == 'Open').toList();
   }
 
-  List<WorkOrderItem> _filterAvailable(itemList, uid) {
-    return itemList.where((item) => item.teknisi == null && item.status == 'Open').toList();
+  List<WorkOrderItem> _filterDone(itemList, uid) {
+    return itemList.where((item) => item.status != 'Open').toList();
   }
 
   @override
@@ -79,8 +78,8 @@ class TroubleshootTechScreen extends StatelessWidget {
             title: title,
             bottom: TabBar(
               tabs: <Widget>[
+                Tab(text: "Done"),
                 Tab(text: "On Progress"),
-                Tab(text: "Available"),
               ],
             ),
           ),
@@ -89,25 +88,25 @@ class TroubleshootTechScreen extends StatelessWidget {
               builder: (context, snapshot) {
                 final uid = Provider.of<Auth>(context).userId;
                 final tid = Provider.of<Pegawai>(context).findByUid(uid).id;
+                Widget done;
                 Widget onProgress;
-                Widget available;
                 if (snapshot.hasData) {
                   List<WorkOrderItem> itemList = snapshot.data;
+                  done = _hasData(_filterDone(itemList, pegawai.id), _showBottomModalAvailable);
                   onProgress = _hasData(_filterOnProgress(itemList, pegawai.id), _showBottomModalOnProgress);
-                  available = _hasData(_filterAvailable(itemList, pegawai.id), _showBottomModalAvailable);
                 } else {
                   if (emptyProvider) {
+                    done = _noData();
                     onProgress = _noData();
-                    available = _noData();
                   } else {
-                    final itemList = Provider.of<WorkOrder>(context).filterWorkOrderWithJenisBy(jenis);
+                    final itemList = Provider.of<WorkOrder>(context).items;
+                    done = _hasData(_filterDone(itemList, tid), _showBottomModalAvailable);
                     onProgress = _hasData(_filterOnProgress(itemList, tid), _showBottomModalOnProgress);
-                    available = _hasData(_filterAvailable(itemList, tid), _showBottomModalAvailable);
                   }
                 }
                 return TabBarView(children: [
+                  done,
                   onProgress,
-                  available,
                 ]);
               }),
         ));
@@ -131,7 +130,7 @@ class TroubleshootTechScreen extends StatelessWidget {
                 Formatting.dateDMYHM(item.createDate),
               ],
               Chip(
-                label: Text(item.level),
+                label: Text(item.jenis),
               ),
             ),
           );
@@ -174,17 +173,11 @@ class TroubleshootTechScreen extends StatelessWidget {
               'Work Order Close: ${item.closeDate}',
               'Work Order Status: ${item.status}',
               'Work Order Kode DP: ${item.kodeDp}',
-              'Kendala Troubleshoot: ${item.kendala}',
               'Customer: ${customer.nama}',
               'Equipment: ${equipment.cable}, ${equipment.closure}, ${equipment.pigtail}, ${equipment.splicer}, ${equipment.ont}',
               'Teknisi: ${teknisi?.nama ?? "Belum Ada"}',
               'Admin: ${admin?.nama ?? "Belum Ada"}',
             ],
-            action1: () {
-              Navigator.of(context).pop();
-              _acquireWO(context, item);
-            },
-            action1Icon: Icon(Icons.add),
           );
         });
   }
@@ -214,11 +207,6 @@ class TroubleshootTechScreen extends StatelessWidget {
               'Teknisi: ${teknisi?.nama ?? "Belum Ada"}',
               'Admin: ${admin?.nama ?? "Belum Ada"}',
             ],
-            action1: () {
-              Navigator.of(context).pop();
-              _doneWO(context, item);
-            },
-            action1Icon: Icon(Icons.check),
           );
         });
   }

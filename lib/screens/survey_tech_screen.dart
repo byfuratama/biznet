@@ -32,10 +32,13 @@ class _SurveyTechScreenState extends State<SurveyTechScreen> {
     super.didChangeDependencies();
   }
 
-  void _selectMenu(BuildContext context, Object id) {
+  void _selectMenu(BuildContext context, dynamic id) {
+    print('bojo $id');
     Navigator.of(context).pushNamed(
       SurveyEditScreen.routeName,
-      arguments: id,
+      arguments: {
+        'survey_id' : id
+      },
     );
   }
 

@@ -38,11 +38,13 @@ class MiniDetailModalTech extends StatelessWidget {
                 IconButton(
                   icon: action1Icon ?? Icon(Icons.add),
                   onPressed: action1,
+                  iconSize: 32,
                 ),
               if (action2 != null)
                 IconButton(
                   icon: action2Icon ?? Icon(Icons.add),
                   onPressed: action2,
+                  iconSize: 32,
                 ),
             ],
           ),

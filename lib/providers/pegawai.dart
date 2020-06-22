@@ -35,7 +35,7 @@ class Pegawai with ChangeNotifier {
 
   PegawaiItem dummy() {
     return PegawaiItem(
-      foto: '', uid: 'tzb0UKsdppNJaMEUiDisS8FUMrK2', nama: 'belum ada', noHp: '08112345678', posisi: 'ADMIN'
+      foto: '', uid: 'tzb0UKsdppNJaMEUiDisS8FUMrK2', nama: 'Memuat...', noHp: '08112345678', posisi: 'Memuat...'
     );
   }
 

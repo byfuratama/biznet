@@ -18,6 +18,8 @@ class WorkOrderItem {
   final admin;
   final status;
   final kendala;
+  final keterangan;
+  final password;
 
   WorkOrderItem({
     this.id,
@@ -30,9 +32,11 @@ class WorkOrderItem {
     this.teknisi,
     this.admin,
     this.status,
+    this.password,
     this.kendala,
     this.createDate,
     this.closeDate,
+    this.keterangan,
   });
 
   String get idn {
@@ -68,6 +72,7 @@ class WorkOrder with ChangeNotifier {
       admin : "",
       status : "",
       kendala : "",
+      password : "",
     );
   }
 
@@ -119,10 +124,20 @@ class WorkOrder with ChangeNotifier {
           admin: data['admin'],
           status: data['status'],
           kendala: data['kendala'],
+          password: data['password'],
         ));
       });
       _items = loadedProducts;
       notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<List> fetchWorkOrder() async {
+    try {
+      await fetchAndSet();
+      return _items;
     } catch (error) {
       throw error;
     }
@@ -159,6 +174,7 @@ class WorkOrder with ChangeNotifier {
           'admin': item.admin,
           'status': item.status,
           'kendala': item.kendala,
+          'password': item.password,
         }),
       );
 
@@ -176,6 +192,7 @@ class WorkOrder with ChangeNotifier {
         admin: item.admin,
         status: item.status,
         kendala: item.kendala,
+        password: item.password,
       );
       _items.add(newItem);
       notifyListeners();

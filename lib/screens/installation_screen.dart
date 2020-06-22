@@ -14,7 +14,7 @@ class InstallationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var pegawai = Provider.of<Auth>(context).pegawai;
-    return pegawai.posisi != "Admin" ? 
+    return pegawai.posisi == "Teknisi" ? 
       InstallationTechScreen(title: title, pegawai: pegawai)
       : InstallationAdminScreen(title: title, pegawai: pegawai);
   }

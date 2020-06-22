@@ -1,3 +1,4 @@
+import 'package:biznet/providers/auth.dart';
 import 'package:biznet/widgets/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +53,8 @@ class _MaintenanceAdminScreenState extends State<MaintenanceAdminScreen> {
       EquipmentItem equipment,
       PegawaiItem teknisi,
       PegawaiItem admin) {
-    // final customerItem =
+    
+    var pegawai = Provider.of<Auth>(context).pegawai?.posisi;
     showModalBottomSheet(
         context: context,
         builder: (_) {
@@ -69,15 +71,15 @@ class _MaintenanceAdminScreenState extends State<MaintenanceAdminScreen> {
               'Teknisi: ${teknisi?.nama}',
               'Admin: ${admin?.nama}',
             ],
-            () {
+            pegawai == "Admin Branch" ? () {
               Navigator.of(context).pop();
               _selectMenu(context, item.id);
-            },
-            () {
+            } : null,
+            pegawai == "Admin Branch" ? () {
               Provider.of<WorkOrder>(context).deleteItem(item.id).then((_) {
                 Navigator.of(context).pop();
               });
-            },
+            } : null,
           );
         });
   }
@@ -95,15 +97,18 @@ class _MaintenanceAdminScreenState extends State<MaintenanceAdminScreen> {
         .items
         .where((item) => item.jenis == 'Maintenance')
         .toList();
+    var pegawai = Provider.of<Auth>(context).pegawai?.posisi;
     return Scaffold(
       appBar: AppBar(
         title: widget.title,
-        actions: <Widget>[
+        actions: 
+          pegawai == "Admin Branch" ?
+          <Widget>[
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () => _selectMenu(context, ''),
           ),
-        ],
+        ] : null,
       ),
       body: RefreshIndicator(
         onRefresh: () => _refreshItems(context),

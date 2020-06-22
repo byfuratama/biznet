@@ -1,3 +1,4 @@
+import 'package:biznet/screens/history_screen.dart';
 import 'package:biznet/screens/printing_screen.dart';
 import 'package:biznet/screens/report_preview_screen.dart';
 import 'package:biznet/screens/search_result_screen.dart';
@@ -88,11 +89,11 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: (settings) {
             final args = settings.arguments as Map;
             var routes = <String, WidgetBuilder>{
-              SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(settings.arguments),
               PegawaiEditScreen.routeName: (ctx) => PegawaiEditScreen(settings.arguments),
               InstallationEditScreen.routeName: (ctx) => InstallationEditScreen(settings.arguments),
               MaintenanceEditScreen.routeName: (ctx) => MaintenanceEditScreen(settings.arguments),
               TroubleshootEditScreen.routeName: (ctx) => TroubleshootEditScreen(settings.arguments),
+              SurveyEditScreen.routeName: (ctx) => SurveyEditScreen(args['survey_id']),
               SearchResultScreen.routeName: (ctx) => SearchResultScreen(
                 searchCategory: args['search_category'],
                 searchType: args['search_type'],
@@ -117,6 +118,7 @@ class MyApp extends StatelessWidget {
             InstallationScreen.routeName: (ctx) => InstallationScreen(),
             MaintenanceScreen.routeName: (ctx) => MaintenanceScreen(),
             PegawaiScreen.routeName: (ctx) => PegawaiScreen(),
+            HistoryScreen.routeName: (ctx) => HistoryScreen(),
 
             SurveyReportScreen.routeName: (ctx) => SurveyReportScreen(),
             TroubleshootReportScreen.routeName: (ctx) =>

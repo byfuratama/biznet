@@ -1,4 +1,5 @@
 import 'package:biznet/providers/auth.dart';
+import 'package:biznet/providers/pegawai.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/app_header.dart';
@@ -26,6 +27,7 @@ class MyProfileScreen extends StatelessWidget {
       shrinkWrap: true,
       children: <Widget>[
         // Text(user.toString()),
+        if (Provider.of<Auth>(context).pegawai?.posisi == "Supervisor")
         Card(
           color: Colors.green,
           child: InkWell(
@@ -81,21 +83,28 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
 
+  Future<dynamic> _loadFutures(context) async {
+    await Provider.of<Pegawai>(context).fetchAndSet();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      color: theme.backgroundColor,
-      width: double.infinity,
-      height: 600,
-      child: Column(
-        children: <Widget>[
-          AppHeader('My Profile'),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-            child: createMenu(context),
-          ),
-        ],
+    return FutureBuilder(
+      future: _loadFutures(context),
+      builder: (context, snapshot) => Container(
+        color: theme.backgroundColor,
+        width: double.infinity,
+        height: 600,
+        child: Column(
+          children: <Widget>[
+            AppHeader('My Profile'),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+              child: createMenu(context),
+            ),
+          ],
+        ),
       ),
     );
   }

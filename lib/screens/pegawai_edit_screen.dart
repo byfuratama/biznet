@@ -28,7 +28,7 @@ class _PegawaiEditScreenState extends State<PegawaiEditScreen> {
   };
 
   Map<String, List> _items = {
-    'posisi_list': ['Admin Store', 'Teknisi', 'Supervisor', 'Sales'],
+    'posisi_list': ['Admin Branch', 'Teknisi', 'Supervisor', 'Sales'],
   };
 
   void changeItem(String selectedItems, String fd) {

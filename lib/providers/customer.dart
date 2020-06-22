@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 class CustomerItem {
   final id;
+  final number;
   final nama;
   final nohp;
   final alamat;
@@ -15,6 +16,7 @@ class CustomerItem {
 
   CustomerItem({
     this.id,
+    @required this.number,
     @required this.nama,
     @required this.nohp,
     @required this.alamat,
@@ -54,6 +56,7 @@ class Customer with ChangeNotifier {
       extractedData.forEach((key, data) {
         loadedProducts.add(CustomerItem(
           id: key,
+          number: data['number'],
           nama: data['nama'],
           nohp: data['nohp'],
           alamat: data['alamat'],
@@ -76,6 +79,7 @@ class Customer with ChangeNotifier {
       final response = await http.post(
         url,
         body: json.encode({
+          'number': item.number,
           'nama': item.nama,
           'nohp': item.nohp,
           'alamat': item.alamat,
@@ -87,6 +91,7 @@ class Customer with ChangeNotifier {
 
       final newItem = CustomerItem(
         id: json.decode(response.body)['name'],
+        number: item.number,
         nama: item.nama,
         nohp: item.nohp,
         alamat: item.alamat,
@@ -109,6 +114,7 @@ class Customer with ChangeNotifier {
       await http.patch(
         url,
         body: json.encode({
+          'number': item.number,
           'nama': item.nama,
           'nohp': item.nohp,
           'alamat': item.alamat,

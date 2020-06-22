@@ -1,3 +1,4 @@
+import 'package:biznet/providers/auth.dart';
 import 'package:biznet/widgets/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,8 @@ class InstallationAdminScreen extends StatefulWidget {
   InstallationAdminScreen({this.title, this.pegawai});
 
   @override
-  _InstallationAdminScreenState createState() => _InstallationAdminScreenState();
+  _InstallationAdminScreenState createState() =>
+      _InstallationAdminScreenState();
 }
 
 class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
@@ -41,9 +43,7 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
   void _selectMenu(BuildContext context, Object id) {
     Navigator.of(context).pushNamed(
       InstallationEditScreen.routeName,
-      arguments: {
-        'work_order_id': id
-      },
+      arguments: {'work_order_id': id},
     );
   }
 
@@ -54,7 +54,7 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
       EquipmentItem equipment,
       PegawaiItem teknisi,
       PegawaiItem admin) {
-    // final customerItem =
+    var pegawai = Provider.of<Auth>(context).pegawai?.posisi;
     showModalBottomSheet(
         context: context,
         builder: (_) {
@@ -71,15 +71,21 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
               'Teknisi: ${teknisi?.nama}',
               'Admin: ${admin?.nama}',
             ],
-            () {
-              Navigator.of(context).pop();
-              _selectMenu(context, item.id);
-            },
-            () {
-              Provider.of<WorkOrder>(context).deleteItem(item.id).then((_) {
-                Navigator.of(context).pop();
-              });
-            },
+            pegawai == "Admin Branch"
+                ? () {
+                    Navigator.of(context).pop();
+                    _selectMenu(context, item.id);
+                  }
+                : null,
+            pegawai == "Admin Branch"
+                ? () {
+                    Provider.of<WorkOrder>(context)
+                        .deleteItem(item.id)
+                        .then((_) {
+                      Navigator.of(context).pop();
+                    });
+                  }
+                : null,
           );
         });
   }
@@ -97,24 +103,27 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
         .items
         .where((item) => item.jenis == 'Installasi')
         .toList();
+    var pegawai = Provider.of<Auth>(context).pegawai?.posisi;
     return Scaffold(
       appBar: AppBar(
         title: widget.title,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _selectMenu(context, ''),
-          ),
-        ],
+        actions: pegawai == "Admin Branch"
+            ? <Widget>[
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () => _selectMenu(context, ''),
+                ),
+              ]
+            : null,
       ),
       body: RefreshIndicator(
         onRefresh: () => _refreshItems(context),
         child: !_triggerOnce
             ? CircularProgressIndicator()
             : Container(
-                child: 
-                // Text('asdf')
-                ListView.builder(
+                child:
+                    // Text('asdf')
+                    ListView.builder(
                   itemBuilder: (ctx, index) {
                     var workOrder = workOrderItems[index];
                     var customer = Provider.of<Customer>(context)
@@ -133,7 +142,9 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
                         index + 1,
                         [
                           customer.nama,
-                          workOrder.createDate != null ? Formatting.dateDMYHM(workOrder.createDate) : '',
+                          workOrder.createDate != null
+                              ? Formatting.dateDMYHM(workOrder.createDate)
+                              : '',
                         ],
                         Chip(
                           label: Text(workOrder.level),

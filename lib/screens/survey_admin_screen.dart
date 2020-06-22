@@ -26,50 +26,46 @@ class SurveyAdminScreen extends StatelessWidget {
     return Provider.of<Survey>(context).items;
   }
 
-
   @override
   Widget build(BuildContext context) {
     bool emptyProvider = Provider.of<Survey>(context).items.length == 0 ||
         Provider.of<Customer>(context).items.length == 0 ||
         Provider.of<Equipment>(context).items.length == 0;
     return Scaffold(
-          appBar: AppBar(
-            title: title,
-          ),
-          body: FutureBuilder(
-              future: _loadFutures(context),
-              builder: (context, snapshot) {
-                // final tid = pegawai.id;
-                Widget child;
-                if (snapshot.hasData) {
-                  List<SurveyItem> itemList = snapshot.data;
-                  child = _hasData(itemList);
+        appBar: AppBar(
+          title: title,
+        ),
+        body: FutureBuilder(
+            future: _loadFutures(context),
+            builder: (context, snapshot) {
+              // final tid = pegawai.id;
+              Widget child;
+              if (snapshot.hasData) {
+                List<SurveyItem> itemList = snapshot.data;
+                child = _hasData(itemList);
+              } else {
+                if (emptyProvider) {
+                  child = _noData();
                 } else {
-                  if (emptyProvider) {
-                    child = _noData();
-                  } else {
-                    final itemList = Provider.of<Survey>(context).items;
-                    child = _hasData(itemList);
-                  }
+                  final itemList = Provider.of<Survey>(context).items;
+                  child = _hasData(itemList);
                 }
-                return child;
-              })
-    );
+              }
+              return child;
+            }));
   }
 
   void _instalSurvey(BuildContext context, Object id) {
     Navigator.of(context).pushNamed(
       InstallationEditScreen.routeName,
-      arguments: {
-        'survey_id' : id
-      },
+      arguments: {'survey_id': id},
     );
   }
 
   void _editSurvey(BuildContext context, Object id) {
     Navigator.of(context).pushNamed(
       SurveyEditScreen.routeName,
-      arguments: id,
+      arguments: {'survey_id': id},
     );
   }
 
@@ -78,8 +74,10 @@ class SurveyAdminScreen extends StatelessWidget {
         itemCount: data.length,
         itemBuilder: (context, index) {
           var item = data[index];
-          final customer = Provider.of<Customer>(context).findById(item.customer);
-          final equipment = Provider.of<Equipment>(context).findById(item.equipment);
+          final customer =
+              Provider.of<Customer>(context).findById(item.customer);
+          final equipment =
+              Provider.of<Equipment>(context).findById(item.equipment);
           return InkWell(
             onTap: () => _showBottomModal(context, item, customer, equipment),
             child: NumberedTile(
@@ -112,8 +110,9 @@ class SurveyAdminScreen extends StatelessWidget {
     );
   }
 
-  void _showBottomModal(BuildContext context, SurveyItem item, CustomerItem customer, EquipmentItem equipment) {
-    // final customerItem = 
+  void _showBottomModal(BuildContext context, SurveyItem item,
+      CustomerItem customer, EquipmentItem equipment) {
+    var pegawai = Provider.of<Auth>(context).pegawai?.posisi;
     showModalBottomSheet(
         context: context,
         builder: (_) {
@@ -131,16 +130,30 @@ class SurveyAdminScreen extends StatelessWidget {
               'Equipment ONT: ${equipment.ont}',
               'Status: ${item.status}',
             ],
-            action1: () {
-              Navigator.of(context).pop();
-              _instalSurvey(context, item.id);
-            },
-            action1Icon: Icon(Icons.add_to_photos, color: Colors.green,),
-            action2: () {
-              Navigator.of(context).pop();
-              _editSurvey(context, item.id);
-            },
-            action2Icon: Icon(Icons.edit, color: Colors.amber,),
+            action1: pegawai == "Admin Branch"
+                ? () {
+                    Navigator.of(context).pop();
+                    _instalSurvey(context, item.id);
+                  }
+                : null,
+            action1Icon: pegawai == "Admin Branch"
+                ? Icon(
+                    Icons.add_to_photos,
+                    color: Colors.green,
+                  )
+                : null,
+            action2: pegawai == "Admin Branch"
+                ? () {
+                    Navigator.of(context).pop();
+                    _editSurvey(context, item.id);
+                  }
+                : null,
+            action2Icon: pegawai == "Admin Branch"
+                ? Icon(
+                    Icons.edit,
+                    color: Colors.amber,
+                  )
+                : null,
           );
         });
   }

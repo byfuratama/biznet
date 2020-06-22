@@ -83,9 +83,11 @@ class Auth with ChangeNotifier {
 
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
+    print('auth');
     final url =
         'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key=AIzaSyDwaWyN3spHto57f2mrbo3Xihuvjgxig5w';
     try {
+      print('auth2');
       final response = await http.post(
         url,
         body: json.encode(
@@ -96,6 +98,7 @@ class Auth with ChangeNotifier {
           },
         ),
       );
+      print('auth3');
       final responseData = json.decode(response.body);
       print(responseData);
       if (responseData['error'] != null) {
