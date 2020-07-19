@@ -23,7 +23,6 @@ class PegawaiScreen extends StatefulWidget {
 }
 
 class _PegawaiScreenState extends State<PegawaiScreen> {
-  
   bool _triggerOnce = false;
   @override
   void didChangeDependencies() {
@@ -43,7 +42,7 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
   }
 
   void _showBottomModal(BuildContext context, PegawaiItem item) {
-    // final customerItem = 
+    // final customerItem =
     showModalBottomSheet(
         context: context,
         builder: (_) {
@@ -52,10 +51,17 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
               'Nama Pegawai: ${item.nama}',
               'Nomor HP: ${item.noHp}',
               'Posisi Pegawai: ${item.posisi}',
-              'Foto Pegawai: ${item.foto}',
+              // 'Foto Pegawai: ${item.foto}',
             ],
-            null, 
-            null
+            () {
+              Navigator.of(context).pop();
+              _selectMenu(context, item.uid);
+            },
+            () {
+              Provider.of<Pegawai>(context).deleteItem(item.uid).then((_) {
+                Navigator.of(context).pop();
+              });
+            },
           );
         });
   }
@@ -91,9 +97,10 @@ class _PegawaiScreenState extends State<PegawaiScreen> {
                     pegawai.nama,
                     pegawai.posisi,
                   ],
-                  Chip(
-                    label: Text(pegawai.foto),
-                  ),
+                  null
+                  // Chip(
+                  //   label: Text(pegawai.foto),
+                  // ),
                 ),
               );
             },

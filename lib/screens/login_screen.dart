@@ -135,8 +135,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             TextFormField(
-                              // initialValue: 'supervisor@biznet.com',
-                              initialValue: 'adminbranch@biznet.com',
+                              initialValue: 'supervisor@biznet.com',
+                              // initialValue: 'adminbranch@biznet.com',
                               // initialValue: 'teknisi@biznet.com',
                               decoration: boxDecoration.copyWith(labelText: 'Username'),
                               validator: (value) {
@@ -151,8 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 10),
                             TextFormField(
-                              // initialValue: 'supervisor',
-                              initialValue: 'adminbranch',
+                              initialValue: 'supervisor',
+                              // initialValue: 'adminbranch',
                               // initialValue: 'teknisi',
                               obscureText: true,
                               decoration: boxDecoration.copyWith(labelText: 'Password'),
