@@ -37,8 +37,12 @@ class Equipment with ChangeNotifier {
     return [..._items];
   }
 
+  EquipmentItem dummy() {
+    return EquipmentItem(cable: '', closure: '', pigtail: '', splicer: '', ont: '');
+  }
+
   EquipmentItem findById(String id) {
-    return _items.firstWhere((item) => item.id == id);
+    return _items.firstWhere((item) => item.id == id, orElse: () => dummy());
   }
 
   EquipmentItem findLast() {

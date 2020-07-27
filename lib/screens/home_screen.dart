@@ -1,6 +1,7 @@
 import 'package:biznet/providers/auth.dart';
 import 'package:biznet/providers/pegawai.dart';
 import 'package:biznet/screens/history_screen.dart';
+import 'package:biznet/screens/pegawai_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/app_header.dart';
@@ -58,6 +59,12 @@ class _HomeScreenState extends State<HomeScreen> {
       'route': HistoryScreen.routeName,
       'hide_if': [],
     },
+    {
+      'title': 'Tambah Pegawai',
+      'icon': Icons.add,
+      'route': PegawaiScreen.routeName,
+      'hide_if': ['Sales','Admin Branch','Teknisi'],
+    },
   ];
 
   List<Map<String, Object>> get getMenus {
@@ -75,9 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     return FutureBuilder(
       future: _loadFutures(context),
-      builder: (context, snapshot) => ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
+      builder: (context, snapshot) => Column(
           children: getMenus
               .map(
                 (menu) => Card(
@@ -105,18 +110,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      color: theme.backgroundColor,
-      width: double.infinity,
-      height: 600,
-      child: Column(
-        children: <Widget>[
-          AppHeader('Work Order'),
-          Padding(
-            padding: EdgeInsets.only(top: 15, left: 25, right: 25),
-            child: createMenu(context),
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Container(
+        color: theme.backgroundColor,
+        width: double.infinity,
+        child: Column(
+          children: <Widget>[
+            AppHeader('Work Order'),
+            Container(
+              padding: EdgeInsets.only(top: 15, left: 25, right: 25, bottom: 25),
+              child: createMenu(context),
+            ),
+          ],
+        ),
       ),
     );
   }

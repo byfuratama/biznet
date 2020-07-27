@@ -169,7 +169,6 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
             .findById(woItem.customer);
         _woEquipment = Provider.of<Equipment>(context, listen: false)
             .findById(woItem.equipment);
-        print(woItem.kodeDp);
         _formData['wo_level'] = woItem.level;
         _formData['wo_kode_dp'] = woItem.kodeDp;
         _formData['wo_status'] = woItem.status;
@@ -187,6 +186,9 @@ class _InstallationEditScreenState extends State<InstallationEditScreen> {
   }
 
   void loadSurveyData() {
+    if (_surveyId == null)
+      return;
+    print('$_surveyId x ${_formData['survey']}');
     final survey = Provider.of<Survey>(context, listen: false)
         .findById(_surveyId ?? _formData['survey']);
     _woCustomer =

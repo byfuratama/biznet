@@ -34,6 +34,15 @@ class SurveyAdminScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: title,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => Navigator.of(context).pushNamed(
+                SurveyEditScreen.routeName,
+                arguments: {'survey_id': ''},
+              ),
+            ),
+          ],
         ),
         body: FutureBuilder(
             future: _loadFutures(context),

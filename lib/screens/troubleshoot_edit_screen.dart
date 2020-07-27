@@ -288,7 +288,7 @@ class _TroubleshootEditScreenState extends State<TroubleshootEditScreen> {
   @override
   Widget build(BuildContext context) {
     String title =
-        widget.dataId != '' ? "Edit Troubleshoot" : "New Troubleshoot";
+        widget.dataId != '' || widget.dataId != null ? "Edit Troubleshoot" : "New Troubleshoot";
     // print('RENDER RENDER');
     return Scaffold(
       appBar: AppBar(

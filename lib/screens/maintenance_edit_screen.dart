@@ -276,7 +276,7 @@ class _MaintenanceEditScreenState extends State<MaintenanceEditScreen> {
   @override
   Widget build(BuildContext context) {
     String title =
-        widget.dataId != '' ? "Edit Maintenance" : "New Maintenance";
+        widget.dataId != '' || widget.dataId != null ? "Edit Maintenance" : "New Maintenance";
     // print('RENDER RENDER');
     return Scaffold(
       appBar: AppBar(

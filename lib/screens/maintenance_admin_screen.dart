@@ -106,7 +106,7 @@ class _MaintenanceAdminScreenState extends State<MaintenanceAdminScreen> {
           <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => _selectMenu(context, ''),
+            onPressed: () => _selectMenu(context, null),
           ),
         ] : null,
       ),

@@ -39,8 +39,12 @@ class Customer with ChangeNotifier {
     return [..._items];
   }
 
+  CustomerItem dummy() {
+    return CustomerItem(number: '', nama: '', nohp: '', alamat: '', email: '', paket: '');
+  }
+
   CustomerItem findById(String id) {
-    return _items.firstWhere((item) => item.id == id);
+    return _items.firstWhere((item) => item.id == id, orElse: () => dummy());
   }
 
   CustomerItem findLast() {

@@ -41,7 +41,8 @@ class Pegawai with ChangeNotifier {
 
   PegawaiItem findById(String id) {
     if (id == null) return dummy();
-    final item = _items.firstWhere((item) => item.id == id);
+
+    final item = _items.firstWhere((item) => item.id == id, orElse: () => dummy());
     return item == null ? dummy() : item;
   }
 

@@ -14,7 +14,7 @@ class SurveyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var pegawai = Provider.of<Auth>(context).pegawai;
-    return pegawai.posisi == "Teknisi" || pegawai.posisi == "Admin Branch" ? 
+    return pegawai.posisi == "Teknisi" ? 
       SurveyTechScreen(title: title, pegawai: pegawai)
       : SurveyAdminScreen(title: title, pegawai: pegawai);
   }

@@ -27,7 +27,7 @@ class MyProfileScreen extends StatelessWidget {
       shrinkWrap: true,
       children: <Widget>[
         // Text(user.toString()),
-        if (Provider.of<Auth>(context).pegawai?.posisi == "Supervisor")
+        if (Provider.of<Auth>(context).pegawai?.posisi == "SupervisorX")
         Card(
           color: Colors.green,
           child: InkWell(

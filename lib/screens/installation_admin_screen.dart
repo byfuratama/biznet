@@ -40,10 +40,10 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
     super.didChangeDependencies();
   }
 
-  void _selectMenu(BuildContext context, Object id) {
+  void _selectMenu(BuildContext context, Object id, {Object surveyId}) {
     Navigator.of(context).pushNamed(
       InstallationEditScreen.routeName,
-      arguments: {'work_order_id': id},
+      arguments: {'work_order_id': id, 'survey_id': surveyId},
     );
   }
 
@@ -74,7 +74,7 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
             pegawai == "Admin Branch"
                 ? () {
                     Navigator.of(context).pop();
-                    _selectMenu(context, item.id);
+                    _selectMenu(context, item.id, surveyId: item.survey);
                   }
                 : null,
             pegawai == "Admin Branch"
@@ -111,7 +111,7 @@ class _InstallationAdminScreenState extends State<InstallationAdminScreen> {
             ? <Widget>[
                 IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: () => _selectMenu(context, ''),
+                  onPressed: () => _selectMenu(context, null),
                 ),
               ]
             : null,
